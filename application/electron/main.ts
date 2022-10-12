@@ -15,13 +15,20 @@ function createWindow() {
       nodeIntegration: true,
     },
   });
-
+  // mainWindow.loadURL(
+  //   url.format({
+  //       // pathname: path.join(__dirname, '../dist/renderer/index.html'),
+  //       pathname: path.join(__dirname, '../index.html'),
+  //       protocol: 'file:',
+  //       slashes: true
+  //   })
+  // );
   if (process.env.NODE_ENV === 'development') {
     mainWindow.loadURL(`http://localhost:4000`);
   } else {
     mainWindow.loadURL(
       url.format({
-          pathname: path.join(__dirname, '../index.html'),
+          pathname: path.join(__dirname, 'renderer/index.html'),
           protocol: 'file:',
           slashes: true
       })
@@ -32,7 +39,7 @@ function createWindow() {
     mainWindow = null;
   });
 
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 }
 
 app.on('ready', createWindow);

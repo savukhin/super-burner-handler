@@ -19,15 +19,11 @@ module.exports = {
           loader: 'babel-loader',
         },
       },
-      {
-        test: /\.worker\.js$/,
-        use: { loader: "worker-loader" },
-      },
     ],
   },
   devServer: {
     static: {
-        directory: path.join(__dirname, '../dist/renderer'),
+        directory: path.join(__dirname, '../electron/dist/renderer'),
     },
     historyApiFallback: true,
     compress: true,
@@ -39,7 +35,7 @@ module.exports = {
     historyApiFallback: { index: "index.html" }
   },
   output: {
-    path: path.resolve(__dirname, '../dist/renderer'),
+    path: path.resolve(__dirname, '../electron/dist/renderer'),
     filename: 'js/[name].js',
     publicPath: './',
     libraryTarget: 'umd',
