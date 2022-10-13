@@ -1,5 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { App } from './app';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+const docRoot = document.getElementById('root')
+if (!docRoot) {
+    console.log("Not found root");
+} else {
+    const root = ReactDOM.createRoot(docRoot);
+    root.render(
+        <App />
+    );
+}
