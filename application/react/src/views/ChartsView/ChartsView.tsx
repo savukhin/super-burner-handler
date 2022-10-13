@@ -1,8 +1,9 @@
 import React from "react";
 import './ChartsView.scss'
 import { Legend, Line, LineChart, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { BaseClient } from "../../client/BaseClient";
 
-export function ChartsView() {
+export function ChartsView(props: { client: BaseClient }) {
 
     const data = [
         { name: 'Page A', uv: 4000, pv: 2400, amt: 2400 },
