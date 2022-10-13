@@ -3,7 +3,8 @@
 
 body {
     display: flex;
-    background-color: $bg-color-light;
+    // background-color: $bg-color-light;
+    background: linear-gradient(-90deg, $bg-color-light 0%, $bg-color-light-2 100%);
     margin: 0;
     padding: $body-padding;
     height: calc(100vh - 2 * $body-padding);
@@ -18,19 +19,24 @@ body {
 #app {
     display: grid;
     gap: 10px;
-    grid-template-columns: var(--options-width) auto;
+    grid-template-columns: var(--options-width) 1px auto;
     height: 100%;
-
-    background-color: $bg-color-light;
 }
 
 #block-dividers {
     cursor: row-resize;
 }
 
+#divider {
+    background-color: black;
+    height: 100%;
+    width: 100%;
+    opacity: 10%;
+}
+
 .block {
     border-radius: 10px;
-    background-color: $block-color;
+    // background-color: $block-color;
     overflow: overlay;
     padding: $block-padding;
 }

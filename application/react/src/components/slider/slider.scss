@@ -1,12 +1,20 @@
+@import '../../scss exports/colors';
+
 input[type='range'] {
-    -webkit-appearance: none !important;
-    background:red;
+    -webkit-appearance: none ;
+    background: $text-color-light;
     height:7px;
+    cursor: pointer;
 }
 
 input[type='range']::-webkit-slider-thumb {
-    -webkit-appearance: none !important;
-    background:blue;
-    height:10px;
+    -webkit-appearance: none ;
+    background: $btn-color;
+    height:15px;
     width:10px;
 }
+
+input[type='range']:hover {
+    background-color: $bg-color-dark;
+}
+

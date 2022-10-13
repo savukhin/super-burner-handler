@@ -11,6 +11,7 @@ export function App(props: { client: BaseClient }) {
             <div id="options" className="block">
                 <OptionsView client={ props.client }/>
             </div>
+            <div id="divider"></div>
             <div id="charts" className="block">
                 <ChartsView client={ props.client }/>
             </div>
