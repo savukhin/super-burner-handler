@@ -6,7 +6,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
     mainFields: ['main', 'module', 'browser'],
   },
-  entry: './src/app.tsx',
+  entry: './src/index.tsx',
   target: 'node',
   target: 'web',
   devtool: 'source-map',
@@ -18,6 +18,14 @@ module.exports = {
         use: {
           loader: 'babel-loader',
         },
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          "style-loader",
+          "css-loader",
+          "sass-loader",
+        ],
       },
     ],
   },

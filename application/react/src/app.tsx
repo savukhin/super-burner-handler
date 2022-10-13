@@ -1,37 +1,16 @@
-// import React from 'react';
-// // import ReactDom from 'react-dom/client';
-// import ReactDOM from "react-dom/client";
+import React from "react";
+import './app.scss'
+import { Slider } from "./components/slider/slider";
 
-// // const mainElement = document.createElement('div');
-// // document.body.appendChild(mainElement);
-
-// // const App = () => {
-// //   return (
-// //     <h1>
-// //       Hi from a react app
-// //     </h1>
-// //   )
-// // }
-
-// // ReactDom.render(<App />, mainElement);
-
-// // reportWebVitals();
-
-// // var global = global || window;
-// // var Buffer = Buffer || [];
-// // var process = process || {
-// //   env: { DEBUG: undefined },
-// //   version: []
-// // };
-
-// const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-// root.render(
-//   <h1> Hello World! </h1>
-// );
-
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-
-
-ReactDOM.render(<h1> Hello World! </h1>, document.querySelector('#root'));
+export function App() {
+    return (
+        <div id="app">
+            <div className="block">
+                <h1>App</h1>
+            </div>
+            <div className="block">
+                <Slider></Slider>
+            </div>
+        </div>
+    )
+}

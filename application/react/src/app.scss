@@ -1,0 +1,30 @@
+@import 'scss exports/colors';
+@import 'scss exports/sizes';
+
+body {
+    display: flex;
+    background-color: $bg-color-light;
+    margin: 0;
+    padding: $body-padding;
+    height: calc(100vh - 2 * $body-padding);
+    width: calc(100vw - 2 * $body-padding);
+}
+
+#root {
+    height: 100%;
+    width: 100%;
+}
+
+#app {
+    display: grid;
+    row-gap: 5px;
+    grid-template-rows: auto $sliders-size;
+    height: 100%;
+
+    background-color: $bg-color-light;
+}
+
+.block {
+    border-radius: 10px;
+    background-color: $block-color;
+}
