@@ -17,7 +17,8 @@ body {
 
 #app {
     display: grid;
-    grid-template-rows: auto 10px var(--sliders-height);
+    gap: 10px;
+    grid-template-columns: var(--options-width) auto;
     height: 100%;
 
     background-color: $bg-color-light;
@@ -27,12 +28,9 @@ body {
     cursor: row-resize;
 }
 
-#sliders {
-    max-height: calc(100% - 300px);
-}
-
 .block {
     border-radius: 10px;
     background-color: $block-color;
     overflow: overlay;
+    padding: $block-padding;
 }
