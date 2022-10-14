@@ -16,11 +16,10 @@ body {
     width: 100%;
 }
 
-#app {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: var(--options-width) 1px auto;
-    height: 100%;
+#app-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #block-dividers {
