@@ -27,19 +27,29 @@ export function Main(props: MainProps) {
         setCharts(prev => new Map([...prev, [chart!.id, chart!]]))
     }
 
-    function showChartSettings(id: number) {
-
+    function toggleChartSettings(id: number, state: boolean | undefined = undefined) {
+        let chart = charts.get(id)
+        if (!chart) 
+            return
+        
+        if (!state)
+            chart.showSettings = !chart.showSettings
+        else
+            chart.showSettings = state
+        
+        setCharts(prev => new Map([...prev, [chart!.id, chart!]]))
     }
 
     return (
         <div id="main">
             <div id="options" className="block">
                 <OptionsView client={ props.client } charts={ charts } 
-                    onChartClick={toggleChart} onChartSettingsClick={showChartSettings} />
+                    onChartClick={toggleChart} onChartSettingsClick={(id) => {toggleChartSettings(id)}} />
             </div>
             <div id="divider"></div>
             <div id="charts" className="block">
-                <ChartsView client={ props.client} charts={ charts }/>
+                <ChartsView client={ props.client} charts={ charts }
+                    onHideSettings={(id) => { toggleChartSettings(id, false) }}/>
             </div>
         </div>
     )

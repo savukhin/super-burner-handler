@@ -3,6 +3,7 @@ export class Chart {
     title: string
     data: any
     showed = false
+    showSettings = false
 
     constructor(id: number, title: string, data: any) {
         this.id = id
@@ -12,19 +13,3 @@ export class Chart {
 }
 
 export type MapChart = Map<number, Chart>
-
-// export class ChartMap extends Map<number, Chart> {
-
-//     constructor() {
-//         super()
-//     }
-
-//     push(chart: Chart) {
-//         this.set(chart.id, chart)
-//         return this
-//     }
-
-//     get(id: number) {
-//         return super.get(id)
-//     }
-// }

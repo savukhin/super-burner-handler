@@ -7,13 +7,15 @@ import { Chart, MapChart } from "../../chart/chart";
 interface ChartsViewProps {
     client: BaseClient,
     charts: MapChart,
+    onHideSettings: (id: number) => void
 }
 
 export function ChartsView(props: ChartsViewProps) {
     return (
         <div id="charts-view">
             {[...props.charts.values()].filter((chart) => { return chart.showed }).map((chart) =>  (
-                <ChartComponent title={ chart.title } key={chart.id} data={chart.data}></ChartComponent>
+                <ChartComponent key={chart.id} chart={chart}
+                    onHideSettings={() => { props.onHideSettings(chart.id) }}></ChartComponent>
             ))}
         </div>
     )
