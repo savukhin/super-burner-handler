@@ -25,10 +25,31 @@ input[type='text']:focus {
     color: $text-color-light;
 }
 
-.btn:hover {
-    cursor: pointer;
-    background-color: $btn-color-hover;
+.btn:disabled, button[disabled] {
+    cursor: auto;
+    background-color: $bg-color-dark;
     border-radius: 3px;
     border: none;
     color: $text-color-light;
+}
+
+.btn:hover:enabled {
+    background-color: $btn-color-hover;
+    color: $text-color-light;
+}
+
+.btn-no-left-radius {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.btn-no-right-radius {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: solid 1px $bg-color-dark-2;
+}
+
+.chart-option {
+    display: grid;
+    grid-template-columns: auto 20px;
 }
