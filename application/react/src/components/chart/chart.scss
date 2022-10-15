@@ -2,7 +2,7 @@
 
 .chart {
     position: relative;
-    background-color: white;
+    background-color: $bg-white;
     border-radius: 4px;
     padding: 9px;
     width: 100%;
@@ -18,6 +18,8 @@
 }
 
 .chart-settings {
+    background-color: white;
+
     position: absolute;
     bottom: 0px;
     width: 100%;
