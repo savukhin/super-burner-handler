@@ -1,37 +1,44 @@
-// import React from 'react';
-// // import ReactDom from 'react-dom/client';
-// import ReactDOM from "react-dom/client";
+import React, { useEffect, useState } from "react";
+import './app.scss'
+import { BaseClient } from "./client/BaseClient";
+import { Main } from "./main";
 
-// // const mainElement = document.createElement('div');
-// // document.body.appendChild(mainElement);
+export function App(props: { client: BaseClient }) {
+    const [error, setError] = useState<string>()
+    const [isLoading, setIsLoading] = useState(true)
 
-// // const App = () => {
-// //   return (
-// //     <h1>
-// //       Hi from a react app
-// //     </h1>
-// //   )
-// // }
+    useEffect(() => {
+        setIsLoading(true)
+        props.client.Connect().then((connected) => {
+            console.log(connected);
+            
+            if (!connected) {
+                setError("Cannot connect to the client")
 
-// // ReactDom.render(<App />, mainElement);
+                return
+            }
 
-// // reportWebVitals();
+            setIsLoading(false)
+        })
+    }, [])
 
-// // var global = global || window;
-// // var Buffer = Buffer || [];
-// // var process = process || {
-// //   env: { DEBUG: undefined },
-// //   version: []
-// // };
+    if (isLoading) {
+        return (
+            <div id="app-loading">
+                <h1> Loading... </h1>
+            </div>
+        )
+    }
 
-// const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-// root.render(
-//   <h1> Hello World! </h1>
-// );
+    if (error) {
+        return (
+            <div id="app-loading">
+                <h1> { error } </h1>
+            </div>
+        )
+    }
 
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-
-
-ReactDOM.render(<h1> Hello World! </h1>, document.querySelector('#root'));
+    return (
+        <Main client={ props.client }></Main>
+    )
+}
