@@ -1,7 +1,9 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-
+// const serialport = require("serialport")
+// import { SerialPort } from 'electron';
+import { SerialPort } from 'serialport';
 let mainWindow: Electron.BrowserWindow | null;
 
 function createWindow() {
@@ -10,6 +12,7 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
@@ -29,7 +32,20 @@ function createWindow() {
     mainWindow = null;
   });
 
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 }
 
-app.on('ready', createWindow);
+async function handleSetTitle (event: Electron.IpcMainInvokeEvent, title: string) {
+  return (await SerialPort.list()).map(port => port.path)
+}
+
+
+app.on('ready', () => {
+  ipcMain.handle("set-title", handleSetTitle)
+
+  createWindow();
+
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+});

@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
   resolve: {
@@ -7,8 +8,7 @@ module.exports = {
     mainFields: ['main', 'module', 'browser'],
   },
   entry: './src/index.tsx',
-  target: 'node',
-  target: 'web',
+  target: 'electron-renderer',
   devtool: 'source-map',
   module: {
     rules: [
@@ -49,6 +49,7 @@ module.exports = {
     libraryTarget: 'umd',
   },
   plugins: [
+    new NodePolyfillPlugin(),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html')
     }),
