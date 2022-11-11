@@ -1,17 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Chart, type MapChart } from "../../chart/chart";
 import { BaseClient } from "../../client/BaseClient";
 import { SerialClient } from "../../client/SerialClient";
 import { Slider } from "../../components/slider/slider";
 import './OptionsView.scss'
-import { ipcRenderer } from "electron"
 
-declare global {
-    interface Window {
-      require(moduleSpecifier: 'serialport'): typeof SerialPort;
-      require(moduleSpecifier: 'electron'): typeof Electron;
-    }
-}
 
 interface OptionsViewProps {
     client: BaseClient
@@ -21,10 +14,7 @@ interface OptionsViewProps {
 }
 
 export function OptionsView(props: OptionsViewProps) {
-    const selectCOMRef = useRef<HTMLSelectElement>(null);
     const [ COMs, setCOMs ] = useState<String[]>([])
-    // const [ serialPort, _] = useState(new serialPort())
-    // const port = new SerialPort.('', {})
 
     function generateChartOption(chart: Chart) {
         return (
@@ -37,14 +27,21 @@ export function OptionsView(props: OptionsViewProps) {
         )
     }
 
-    async function onCOMListOpen() {
-        const ports = await ipcRenderer.invoke("set-title", "Work?")
-        console.log(ports);
-        setCOMs(ports)
+    async function refreshCOMs() {
+        setCOMs(await props.client.GetCOMs())
+    }
+
+    function sendMotorMove(event: ChangeEvent<HTMLInputElement>, axis: "x" | "y") {
+        const target = event.target
+        if (target == null)
+            return
+        console.log("sended value", target.value);
+        
+        props.client.Move(+target.value, axis)
     }
 
     return (
-        <div>
+        <div className="options-wrapper">
             <input className="text-input" type="text" placeholder="A?"></input>
             <input type="button" className="btn" value="Run"></input>
             <input type="button" className="btn" value="Test run"></input>
@@ -54,17 +51,15 @@ export function OptionsView(props: OptionsViewProps) {
                 <Slider></Slider>
             </div>
 
-            <select ref={ selectCOMRef } onClick={ onCOMListOpen }>
-                { COMs.map((port) => (
-                    <option> { port } </option>
+
+            <Slider text="X-Axis" onChange={ (event) => { sendMotorMove(event, "x") } }></Slider>
+            <Slider text="Y-Axis" onChange={ (event) => { sendMotorMove(event, "y") } }></Slider>
+
+            <input type="button" className="btn" value="Refresh COMs" onClick={ refreshCOMs }></input>
+            <select onChange={ (event) => { if (event.target) props.client.ChoseCOM(event.target.value) } }>
+                { COMs.map((port, ind) => (
+                    <option key={ ind }> { port } </option>
                 )) }
-                {/* <option value="">--Please choose an option--</option>
-                <option value="dog">Dog</option>
-                <option value="cat">Cat</option>
-                <option value="hamster">Hamster</option>
-                <option value="parrot">Parrot</option>
-                <option value="spider">Spider</option>
-                <option value="goldfish">Goldfish</option> */}
             </select>
 
             { Array.from(props.charts.values()).map((chart) => {

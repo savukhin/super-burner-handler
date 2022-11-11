@@ -5,8 +5,9 @@
 #include "connector.h"
 #include "sensor.h"
 #include "motor.h"
+#include "queries.h"
 
-uint httpPort = 80;
+int httpPort = 80;
 std::string ssid = "WS_Lab7";
 std::string password = "ws2020ws";
 
@@ -14,6 +15,9 @@ Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
 Motor motorX(200);
 Motor motorY(200);
+
+Motor motorReductor1(200);
+Motor motorReductor1(200);
 
 Thread sensorsThread = Thread();
 
@@ -28,24 +32,28 @@ void sendCharts() {
 
 void setup() {
     // sensors.setup()
-    // connector.setup(httpPort, ssid, password);
+    connector.setup(httpPort, ssid, password);
 
     // sensorsThread.onRun(sendCharts);
     // sensorsThread.setInterval(1000);
     // stepper.setSpeed(30);
     
 
-    motorX.setup(16, 5);
-    motorY.setup(4, 0);
-}
+    motorX.setup(15, 4);
+    motorY.setup(5, 0);
 
-const float GEAR_RED = 64;
-const float STEPS_PER_OUT_REV = STEPS * GEAR_RED;
-int StepsRequired;
+    connector.setMotorMoveCallback([](MotorMoveQuery query) {
+      Serial.println("Query x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
+      if (query.x_axis)
+        motorX.moveTo(query.position);
+      else
+        motorY.moveTo(query.position);
+    });
+}
 
 void loop() {
     // if (sensorsThread.shouldRun())
     //     sensorsThread.run();
-
-    // connector.loop();
+    
+    connector.loop();
 }

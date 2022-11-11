@@ -1,8 +1,17 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import './slider.scss'
 
-export function Slider() {
+interface SliderProps {
+    text?: string,
+    onChange?: (event: ChangeEvent<HTMLInputElement> ) => void
+}
+
+export function Slider(props: SliderProps) {
     return (
-        <input type="range"></input>        
+        <div className="slider-wrapper">
+            <span> { props.text } </span>
+            <input type="range" onChange={ (event) => { if (props.onChange) props.onChange(event) } }>
+            </input>
+        </div>
     )
 }

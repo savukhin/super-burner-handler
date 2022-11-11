@@ -1,10 +1,11 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-// const serialport = require("serialport")
-// import { SerialPort } from 'electron';
-import { SerialPort } from 'serialport';
+import { SerialClient } from './SerialClient';
+
 let mainWindow: Electron.BrowserWindow | null;
+
+let serialClient = new SerialClient
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -35,13 +36,11 @@ function createWindow() {
   mainWindow.webContents.openDevTools()
 }
 
-async function handleSetTitle (event: Electron.IpcMainInvokeEvent, title: string) {
-  return (await SerialPort.list()).map(port => port.path)
-}
-
-
 app.on('ready', () => {
-  ipcMain.handle("set-title", handleSetTitle)
+  ipcMain.handle("get-coms", SerialClient.handleGetCOMs)
+
+  ipcMain.on("send-move", serialClient.SendMoveHandler)
+  ipcMain.on("chose-com", serialClient.SetPortHandler)
 
   createWindow();
 

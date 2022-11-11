@@ -1,14 +1,19 @@
+#ifndef CONNECTOR_H
+#define CONNECTOR_H
+
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <string>
+#include <vector>
+#include <optional>
 #include "chart.h"
-
-using namespace std;
+#include "queries.h"
 
 class Connector {
 private:
     AsyncWebServer server;
     AsyncWebSocket ws;
+    void(*moveMotorCallback)(MotorMoveQuery);
 
     static void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         AwsFrameInfo *info = (AwsFrameInfo*)arg;
@@ -34,16 +39,52 @@ private:
         }
     }
 
+    bool doQuery(RawQuery query) {
+      auto motor = MotorMoveQuery::isMotorMoveQuery(query);
+
+      if (motor != std::nullopt) {
+        Serial.println("Motor query");
+        this->moveMotorCallback(motor.value());
+        return true;
+      }
+
+      return false;
+    }
+
+    void serialReader() {
+      String content = "";
+      // char character;
+          
+      // while(Serial.available()) {
+      //     character = Serial.read();
+      //     content.concat(character);
+      // }
+
+      while (Serial.available() == 0) {}     //wait for data available
+      content = Serial.readString();
+      content.trim();
+
+      Serial.print("content is ");
+      Serial.println(content);
+
+      auto query = parseQuery(content);
+      doQuery(query);
+    }
+
 public:
     Connector(): server(80), ws("/ws") {}
 
-    void setup(uint httpPort, std::string ssid, std::string password) {
-        WiFi.begin(ssid.c_str(), password.c_str());
+    void setup(int httpPort, std::string ssid, std::string password) {
+        // WiFi.begin(ssid.c_str(), password.c_str());
         Serial.begin(115200);
 
-        this->server = AsyncWebServer(httpPort);
-        this->ws.onEvent(this->onEvent);
-        this->server.addHandler(&ws);
+        // this->server = AsyncWebServer(httpPort);
+        // this->ws.onEvent(this->onEvent);
+        // this->server.addHandler(&ws);
+    }
+
+    void setMotorMoveCallback(void(*moveMotorCallback)(MotorMoveQuery)) {
+      this->moveMotorCallback = moveMotorCallback;
     }
 
     void send(std::vector<Chart> &charts) {
@@ -52,11 +93,13 @@ public:
 
     bool loop() {
       if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("Not connected");
-        return false;
+        // return false;
       }
 
-      Serial.println("Connected");
+      serialReader();
+
       return true;
     }
 };
+
+#endif

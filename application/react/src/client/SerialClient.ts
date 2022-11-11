@@ -1,22 +1,23 @@
 import { Chart } from "../chart/chart";
-import { BaseClient, ClientState } from "./BaseClient";
+import { Axis, BaseClient, ClientState, Direction } from "./BaseClient";
+import { ipcRenderer } from "electron"
 
 export class SerialClient extends BaseClient {
-    port: string
-
-    constructor(port: string) {
+    constructor() {
         super()
-        this.port = port    
     }
 
     Connect(): Promise<boolean> {
-        return new Promise(() => {
-            setTimeout(() => {}, 1000)
+        return new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
             return true
         })
     }
 
     GetCharts(): Chart[] {
         return []
+    }
+
+    Move(length: number, axis: "x" | "y"): void {
+        ipcRenderer.send("send-move", length, axis)
     }
 }

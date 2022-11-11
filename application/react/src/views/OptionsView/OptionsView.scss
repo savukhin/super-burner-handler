@@ -1,5 +1,9 @@
 @import '../../scss exports/colors';
 
+.options-wrapper > * {
+    margin-bottom: 5px;
+}
+
 input {
     width: fill-available;
     width: -webkit-fill-available;

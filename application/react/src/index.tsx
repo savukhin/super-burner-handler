@@ -8,7 +8,7 @@ const docRoot = document.getElementById('root')
 if (!docRoot) {
     console.log("Not found root");
 } else {
-    let client = new DummyClient()
+    let client = new SerialClient()
 
     const root = ReactDOM.createRoot(docRoot);
     root.render(

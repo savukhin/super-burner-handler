@@ -1,5 +1,5 @@
 import { Chart } from "../chart/chart";
-import { BaseClient, ClientState } from "./BaseClient";
+import { Axis, BaseClient, ClientState, Direction } from "./BaseClient";
 
 export class DummyClient extends BaseClient {
     state: ClientState | undefined;
@@ -35,11 +35,7 @@ export class DummyClient extends BaseClient {
     }
 
     Connect(): Promise<boolean> {
-        console.log("Connection start");
-        
         return new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
-            console.log("Promise start");
-            console.log("Promise after timeout");
             return true
         })
     }
@@ -47,4 +43,6 @@ export class DummyClient extends BaseClient {
     GetCharts(): Chart[] {
         return this.generateCharts()
     }
+
+    Move(length: number, axis: "x" | "y"): void {}
 }

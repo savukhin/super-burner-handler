@@ -1,5 +1,5 @@
 import { Chart } from "../chart/chart";
-import { BaseClient, ClientState } from "./BaseClient";
+import { Axis, BaseClient, ClientState, Direction } from "./BaseClient";
 
 export class HttpClient extends BaseClient {
     ip: string
@@ -19,4 +19,7 @@ export class HttpClient extends BaseClient {
     GetCharts(): Chart[] {
         return []
     }
+
+    Move(length: number, axis: "x" | "y"): void {}
+
 }
