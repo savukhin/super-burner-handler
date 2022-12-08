@@ -14,6 +14,7 @@ private:
     AsyncWebServer server;
     AsyncWebSocket ws;
     void(*moveMotorCallback)(MotorMoveQuery);
+    void(*reductorCallback)(ReductorQuery);
 
     static void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         AwsFrameInfo *info = (AwsFrameInfo*)arg;
@@ -40,11 +41,17 @@ private:
     }
 
     bool doQuery(RawQuery query) {
-      auto motor = MotorMoveQuery::isMotorMoveQuery(query);
+      auto motorMove = MotorMoveQuery::isMotorMoveQuery(query);
+      if (motorMove != std::nullopt) {
+        Serial.println("Motor move query");
+        this->moveMotorCallback(motorMove.value());
+        return true;
+      }
 
-      if (motor != std::nullopt) {
-        Serial.println("Motor query");
-        this->moveMotorCallback(motor.value());
+      auto reductor = ReductorQuery::isReductorQuery(query); 
+      if (reductor != std::nullopt) {
+        Serial.println("Reductor query");
+        this->reductorCallback(reductor.value());
         return true;
       }
 
@@ -53,12 +60,6 @@ private:
 
     void serialReader() {
       String content = "";
-      // char character;
-          
-      // while(Serial.available()) {
-      //     character = Serial.read();
-      //     content.concat(character);
-      // }
 
       while (Serial.available() == 0) {}     //wait for data available
       content = Serial.readString();
@@ -85,6 +86,9 @@ public:
 
     void setMotorMoveCallback(void(*moveMotorCallback)(MotorMoveQuery)) {
       this->moveMotorCallback = moveMotorCallback;
+    }
+    void setReductorCallback(void(*reductorCallback)(ReductorQuery)) {
+      this->reductorCallback = reductorCallback;
     }
 
     void send(std::vector<Chart> &charts) {

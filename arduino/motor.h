@@ -28,7 +28,8 @@ public:
     this->valveLenghtPerDegree = this->valveLenghtMM / 360;
 
     this->pulse_rev = pulse_rev;
-    this->rev_min = 1600;
+    // this->rev_min = 1600;
+    this->rev_min = 1000;
     this->stepDegree = 360 / this->pulse_rev;
 
     this->position = 0;
@@ -49,6 +50,7 @@ public:
     delayMicroseconds(pd);
     digitalWrite(this->pinPull, LOW);
     delayMicroseconds(pd);
+    Serial.println(pd);
   }
 
   void rotate(float degrees) {

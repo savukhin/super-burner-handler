@@ -5,7 +5,18 @@
 #include "connector.h"
 #include "sensor.h"
 #include "motor.h"
+#include "reductorMotor.h"
 #include "queries.h"
+
+#define D0 16
+#define D1 5
+#define D2 4
+#define D3 0
+#define D4 2
+#define D5 14
+#define D6 12
+#define D7 13
+#define D8 15
 
 int httpPort = 80;
 std::string ssid = "WS_Lab7";
@@ -16,8 +27,8 @@ Connector connector;
 Motor motorX(200);
 Motor motorY(200);
 
-Motor motorReductor1(200);
-Motor motorReductor1(200);
+ReductorMotor motorReductor1(200);
+ReductorMotor motorReductor2(200);
 
 Thread sensorsThread = Thread();
 
@@ -39,15 +50,31 @@ void setup() {
     // stepper.setSpeed(30);
     
 
-    motorX.setup(15, 4);
-    motorY.setup(5, 0);
+    // motorX.setup(15, 4);
+    // motorY.setup(5, 0);
+    motorReductor1.setup(D8, D2);
+    motorReductor2.setup(5, 0);
+
 
     connector.setMotorMoveCallback([](MotorMoveQuery query) {
-      Serial.println("Query x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
+      Serial.println("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
       if (query.x_axis)
         motorX.moveTo(query.position);
       else
         motorY.moveTo(query.position);
+    });
+
+    connector.setReductorCallback([](ReductorQuery query) {
+      Serial.println("Query reduct number " + String(query.reductor_number) + " NextPercentage: " + String(query.open_percentage));
+
+      switch (query.reductor_number) {
+        case 1:
+          motorReductor1.openPercentage(query.open_percentage);
+          break;
+        case 2:
+          motorReductor2.openPercentage(query.open_percentage);
+          break;
+      }
     });
 }
 
