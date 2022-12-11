@@ -13,7 +13,7 @@
 #define D2 4
 #define D3 0
 #define D4 2
-#define D5 14
+#define D5 14  
 #define D6 12
 #define D7 13
 #define D8 15
@@ -50,10 +50,10 @@ void setup() {
     // stepper.setSpeed(30);
     
 
-    // motorX.setup(15, 4);
-    // motorY.setup(5, 0);
-    motorReductor1.setup(D8, D2);
-    motorReductor2.setup(5, 0);
+    motorX.setup(D8, D2);
+    motorY.setup(5, 0);
+    // motorReductor1.setup(D8, D2);
+    // motorReductor2.setup(5, 0);
 
 
     connector.setMotorMoveCallback([](MotorMoveQuery query) {
@@ -81,6 +81,5 @@ void setup() {
 void loop() {
     // if (sensorsThread.shouldRun())
     //     sensorsThread.run();
-    
     connector.loop();
 }

@@ -73,6 +73,7 @@ public:
 
   void moveTo(float position) {
     this->moveLength(position - this->position);
+    this->position = position;
   }
 };
 

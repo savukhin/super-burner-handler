@@ -34,7 +34,10 @@ function createWindow() {
   });
 
   mainWindow.webContents.openDevTools()
+  mainWindow.setMenu(null)
 }
+
+app.setUserTasks([])
 
 app.on('ready', () => {
   ipcMain.handle("get-coms", SerialClient.handleGetCOMs)

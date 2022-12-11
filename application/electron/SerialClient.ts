@@ -56,6 +56,7 @@ export class SerialClient {
     }
 
     SendMoveHandler(event: Electron.IpcMainEvent, length: number, axis: "x" | "y") {
+        console.log(`received request serial = ${this.serial}`);
         if (this.serial == undefined)
             return
         
@@ -65,6 +66,8 @@ export class SerialClient {
         console.log(axis, length);
         
         let request = "motor-move " + axis.toString() + " " + length.toString()
+        console.log(`request is '${request}'`);
+        
 
         // this.serial.write(Buffer.from(request), function(err) {
         this.serial.write(request, function(err) {

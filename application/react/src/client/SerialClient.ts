@@ -8,7 +8,7 @@ export class SerialClient extends BaseClient {
     }
 
     Connect(): Promise<boolean> {
-        return new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
+        return new Promise((resolve) => setTimeout(resolve, 1)).then(() => {
             return true
         })
     }

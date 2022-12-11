@@ -19,3 +19,16 @@ $btn-color-hover: #f1ad53;
 
 $text-color: black;
 $warning-color: #dd1212;
+
+:root {
+    --main-color: $main-color;
+    --bg-color-light: $bg-color-light;
+    --bg-color-light-2: $bg-color-light-2;
+    --bg-color-dark: $bg-color-dark;
+    --bg-color-dark-2: $bg-color-dark-2;
+    --block-color: $block-color;
+    --main-text-color: $main-text-color;
+    --bg-white: $bg-white;
+
+    --warning-color: $warning-color;
+}

@@ -18,7 +18,10 @@ export abstract class BaseClient {
     abstract GetCharts(): Chart[]
 
     GetCOMs(): Promise<string[]> {
-        return ipcRenderer.invoke("get-coms")
+        const coms = ipcRenderer.invoke("get-coms")
+        console.log(coms);
+        
+        return coms
     }
 
     ChoseCOM(COM: string) {
