@@ -155,7 +155,7 @@ input[type='text']:focus {
 
 .labeled-parameter {
     display: grid;
-    grid-template-columns: 10px 50% 10px;
+    grid-template-columns: 1.5em auto 2em;
     width: 100%;
 
     input {
@@ -163,5 +163,12 @@ input[type='text']:focus {
         margin-right: 5px;
 
         cursor: initial;
+    }
+}
+
+.position-options-wrapper {
+    h3 {
+        margin-top: 25px;
+        margin-bottom: 0;
     }
 }

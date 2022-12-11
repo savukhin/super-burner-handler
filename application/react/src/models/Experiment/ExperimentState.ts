@@ -1,3 +1,8 @@
+export interface IPosition {
+    x: number
+    y: number
+}
+
 export interface IPositions {
     x1_end: number
     x2_end: number
@@ -26,10 +31,16 @@ export class ExperimentState {
         this.positions = positions
     }
 
-    public IsReady() {
+    public IsReadyToStart() {
         return this.COMPrepared 
                 // && this.YAxisPrepared
                 && !this.Started
+                && this.positions
+    }
+
+    public IsReady() {
+        return this.COMPrepared 
+                // && this.YAxisPrepared
                 && this.positions
     }
 

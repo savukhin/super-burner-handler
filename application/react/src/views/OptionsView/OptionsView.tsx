@@ -5,7 +5,7 @@ import { SerialClient } from "../../models/client/SerialClient";
 import { Slider } from "../../components/slider/slider";
 import './OptionsView.scss'
 import Select, { StylesConfig } from 'react-select';
-import { ExperimentState } from "../../models/Experiment/ExperimentState";
+import { ExperimentState, IPosition, IPositions } from "../../models/Experiment/ExperimentState";
 
 
 interface OptionsViewProps {
@@ -46,6 +46,11 @@ export function OptionsView(props: OptionsViewProps) {
     const [ YPosition, setYPosition ] = useState(0)
     const [ XMoving, setXMoving ] = useState(false)
     const [ XPosition, setXPosition ] = useState(0)
+    const X1InputRef = useRef<HTMLInputElement>(null)
+    const X2InputRef = useRef<HTMLInputElement>(null)
+    const YInputRef = useRef<HTMLInputElement>(null)
+    const stepInputRef = useRef<HTMLInputElement>(null)
+    const [ currentPosition, setCurrentPosition ] = useState<IPosition>({x: 0, y: 0})
 
     useEffect(() => {
         refreshCOMs()
@@ -144,35 +149,81 @@ export function OptionsView(props: OptionsViewProps) {
         sendMotorMove(0, "y")
     }
 
+    async function moveArrowClick(direction: "up" | "left" | "down" | "right") {
+        const step = +(stepInputRef.current!.value)
+        console.log(step);
+        console.log(currentPosition.x + step);
+        
+        if (isNaN(step)) {
+            alert ("Type number in the step field!")
+            return
+        }
+
+        switch (direction) {
+            case "up":
+                await sendMotorMove(currentPosition.x + step, "x")
+                currentPosition.x += step
+                break;
+            case "down":
+                await sendMotorMove(currentPosition.x - step, "x")
+                currentPosition.x -= step
+                break;
+
+            case "left":
+                await sendMotorMove(currentPosition.y + step, "y")
+                currentPosition.y += step
+                break;
+            case "right":
+                await sendMotorMove(currentPosition.y - step, "y")
+                currentPosition.y -= step
+                break;
+        }
+
+    }
+
     function generateControls() {
         return (
             <div className="controls-wrapper">
                 {/* <Slider text="X-Axis" enabled={ !XMoving } onChange={ (event) => { sendMotorMoveBtn(event, "x") } }></Slider> */}
-                <fieldset>
-                    <div className="labeled-input">
-                        <input type="text" placeholder="Step"></input> <span>mm</span>
+                <fieldset className="position-options-wrapper">
+                    <div className="labeled-parameter">
+                        <span>Step:</span>
+                        <input type="text" placeholder="Step in mm - Type number" ref={ stepInputRef } ></input>
+                        <span>mm</span>
                     </div>
                     <div className="direction-arrows-wrapper">
-                        <button className="btn arrow-top">↑</button>
-                        <button className="btn arrow-left">←</button>
-                        <button className="btn arrow-bottom">↓</button>
-                        <button className="btn arrow-right">→</button>
+                        <button disabled={ XMoving || YMoving } className="btn arrow-top" onClick={() => { moveArrowClick("up") }}>↑</button>
+                        <button disabled={ XMoving || YMoving } className="btn arrow-left" onClick={() => { moveArrowClick("left") }}>←</button>
+                        <button disabled={ XMoving || YMoving } className="btn arrow-bottom" onClick={() => { moveArrowClick("down") }}>↓</button>
+                        <button disabled={ XMoving || YMoving } className="btn arrow-right" onClick={() => { moveArrowClick("right") }}>→</button>
+                    </div>
+
+                    <h3>Current position</h3>
+                    <div className="labeled-parameter">
+                        <span>X:</span>
+                        <input type="text" readOnly value={ currentPosition.x }></input>
+                        <span>mm</span>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>Y:</span>
+                        <input type="text" readOnly value={ currentPosition.y }></input>
+                        <span>mm</span>
                     </div>
                 </fieldset>
                 <fieldset className="fixed-values">
                     <div className="labeled-parameter">
                         <span>X1</span>
-                        <input type="text" readOnly value={0}></input>
+                        <input type="text" ref={ X1InputRef } readOnly value={0}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
                         <span>X2</span>
-                        <input type="text" readOnly value={0}></input>
+                        <input type="text" ref={ X2InputRef } readOnly value={0}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
                         <span>Y</span>
-                        <input type="text" readOnly value={0}></input>
+                        <input type="text" ref={ YInputRef } readOnly value={0}></input>
                         <span>mm</span>
                     </div>
                 </fieldset>
@@ -180,8 +231,8 @@ export function OptionsView(props: OptionsViewProps) {
                     <div className="labeled-input">
                         <input type="text" placeholder="Speed"></input> <span>mm/s</span>
                     </div>
-                    <button className="btn">Start experiment</button>
-                    <button className="btn btn-warning">Stop</button>
+                    <button disabled={ !experimentState.IsReadyToStart() } className="btn" onClick={ startExperiment }>Start experiment</button>
+                    <button disabled={ !experimentState.Started } className="btn btn-warning">Stop</button>
                 </fieldset>
             </div>
         )
