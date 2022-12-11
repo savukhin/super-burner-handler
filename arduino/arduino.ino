@@ -50,8 +50,10 @@ void setup() {
     // stepper.setSpeed(30);
     
 
-    motorX.setup(D8, D2);
-    motorY.setup(5, 0);
+    // motorX.setup(D8, D2);
+    // motorY.setup(5, 0);
+    motorX.setup(D1, D3);
+    motorY.setup(D8, D2);
     // motorReductor1.setup(D8, D2);
     // motorReductor2.setup(5, 0);
 

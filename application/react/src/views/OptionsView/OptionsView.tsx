@@ -47,6 +47,7 @@ export function OptionsView(props: OptionsViewProps) {
     const [ XMoving, setXMoving ] = useState(false)
     const [ XPosition, setXPosition ] = useState(0)
     const [ stepRange, setStepRange] = useState(0)
+    const [ currentSpeed, setCurrentSpeed] = useState(0)
     const [ currentPosition, setCurrentPosition ] = useState<IPosition>({x: 0, y: 0})
 
     useEffect(() => {
@@ -109,6 +110,36 @@ export function OptionsView(props: OptionsViewProps) {
 
     async function startExperiment() {
         experimentState.Start()
+        setExperimentState(Object.create(experimentState))
+
+        await sendMotorMove(0, "x")
+        await sendMotorMove(experimentState.positions.y_start, "y")
+        console.log("Init position");
+        
+        await sendMotorMove(experimentState.positions.x1_end, "x")
+        await setTimeout(() => {}, 500)
+        console.log("X1");
+
+        await sendMotorMove(0, "y")
+        await setTimeout(() => {}, 500)
+        await sendMotorMove(experimentState.positions.y_start, "y")
+        console.log("Init position");
+
+        await setTimeout(() => {}, 1000)
+        await sendMotorMove(experimentState.positions.x2_end, "x")
+        console.log("X2");
+        
+        await setTimeout(() => {}, 500)
+        await sendMotorMove(0, "y")
+        await setTimeout(() => {}, 500)
+
+        await sendMotorMove(experimentState.positions.y_start, "y")
+        await sendMotorMove(0, "x")
+
+        console.log("Ended");
+        
+
+        experimentState.Finish()
         setExperimentState(Object.create(experimentState))
     }
 
@@ -222,6 +253,16 @@ export function OptionsView(props: OptionsViewProps) {
         setStepRange(step)
     }
 
+    function onChangeSpeed(event: React.ChangeEvent<HTMLInputElement>) {
+        const speed = +event.target.value
+        if (isNaN(speed)) { 
+            showErrorAlert("Type number!")
+            return
+        }
+
+        setCurrentSpeed(speed)
+    }
+
     async function forceStopExperiment() {
 
     }
@@ -277,8 +318,10 @@ export function OptionsView(props: OptionsViewProps) {
                     </div>
                 </fieldset>
                 <fieldset className="run-fieldset">
-                    <div className="labeled-input">
-                        <input type="text" placeholder="Speed"></input> <span>mm/s</span>
+                    <div className="labeled-parameter">
+                        <span>Speed</span>
+                        <input type="text" disabled={ experimentState.Started } placeholder="Speed" value={ currentSpeed } onChange={ onChangeSpeed }></input>
+                        <span>mm/s</span>
                     </div>
                     <button disabled={ !experimentState.IsReadyToStart() } className="btn" onClick={ startExperiment }>Start experiment</button>
                     <button disabled={ !experimentState.Started } className="btn btn-warning" onClick={ forceStopExperiment }>Stop</button>
@@ -328,23 +371,23 @@ export function OptionsView(props: OptionsViewProps) {
                 : ""
             }
 
-            { experimentState.COMPrepared && !experimentState.YAxisPrepared 
+            {/* { experimentState.COMPrepared && !experimentState.YAxisPrepared 
                 ? <>
                     <Slider text="Y-Axis" enabled={ !YMoving } onChange={ (event) => { sendMotorMoveBtn(event, "y") } }></Slider>
                     <input type="button" className="btn" disabled={ YMoving } value="Fix position" onClick={ fixYPosition }></input>
                 </>
                 : ""
-            }
-            { experimentState.Started 
+            } */}
+            {/* { experimentState.Started 
                 ? generateControls()
                 : ""
-            }
+            } */}
             {/* <Slider text="Y-Axis" onChange={ (event) => { sendMotorMove(event, "y") } }></Slider> */}
 
-            { experimentState.IsReady() ? 
+            {/* { experimentState.IsReady() ? 
                 <input type="button" className="btn" value="Start!" onClick={ startExperiment }></input>
                 : <></>
-            }
+            } */}
 
             { generateErrors(errors) }
 

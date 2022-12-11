@@ -49,4 +49,12 @@ export class ExperimentState {
         this.Started = true;
         return true
     }
+
+    public Finish() {
+        if (!this.Started) 
+            return false;
+
+        this.Started = false;
+        return true
+    }
 }
