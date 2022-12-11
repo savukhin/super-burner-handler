@@ -42,7 +42,10 @@ export function OptionsView(props: OptionsViewProps) {
     const [ experimentState, setExperimentState ] = useState(new ExperimentState());
     const [ chosenCOM, setChosenCOM ] = useState<string>()
     const [ errors, setErrors ] = useState<string[]>()
+    const [ YMoving, setYMoving ] = useState(false)
+    const [ YPosition, setYPosition ] = useState(0)
     const [ XMoving, setXMoving ] = useState(false)
+    const [ XPosition, setXPosition ] = useState(0)
 
     useEffect(() => {
         refreshCOMs()
@@ -64,25 +67,43 @@ export function OptionsView(props: OptionsViewProps) {
         setCOMs(coms)
     }
 
-    async function sendMotorMove(event: ChangeEvent<HTMLInputElement>, axis: "x" | "y") {
+    async function sendMotorMove(position: number, axis: "x" | "y") {
+        console.log("sended value", position);
+        
+        if (axis == "x")
+            setXMoving(true)
+        else
+            setYMoving(true)
+
+        // await new Promise(async () => {
+            const response = await props.client.Move(position, axis)
+            console.log(response);
+            
+            if (axis == "x") {
+                setXPosition(position)
+                setXMoving(false)
+            } else {
+                setYPosition(position)
+                setYMoving(false)
+            }
+        // })
+    }
+
+    async function sendMotorMoveBtn(event: ChangeEvent<HTMLInputElement>, axis: "x" | "y") {
         const target = event.target
         if (target == null)
             return
-        console.log("sended value", target.value);
-        
-        setXMoving(true)
 
-        // await new Promise(async () => {
-            const response = await props.client.Move(+target.value, axis)
-            console.log(response);
-            
-            setXMoving(false)
-        // })
+        const position = +target.value
+        if (isNaN(position))
+            return
+        
+        sendMotorMove(position, axis)
     }
 
     function startExperiment() {
         experimentState.Start()
-        setExperimentState(experimentState)
+        setExperimentState(Object.create(experimentState))
     }
 
     function onChangeCOM(newValue: IOptionValue) {
@@ -116,6 +137,11 @@ export function OptionsView(props: OptionsViewProps) {
                 </li>)}
             </ul>
         )
+    }
+
+    function fixYPosition() {
+        setExperimentState(value => { experimentState.SetYAxisEndPositionn(YPosition); return Object.create(experimentState) })
+        sendMotorMove(0, "y")
     }
 
     return (
@@ -154,8 +180,15 @@ export function OptionsView(props: OptionsViewProps) {
                 : <></>
             }
 
-            { experimentState.COMPrepared 
-                ? <Slider text="X-Axis" enabled={ !XMoving } onChange={ (event) => { sendMotorMove(event, "x") } }></Slider>
+            { experimentState.COMPrepared && !experimentState.YAxisPrepared 
+                ? <>
+                    <Slider text="Y-Axis" enabled={ !YMoving } onChange={ (event) => { sendMotorMoveBtn(event, "y") } }></Slider>
+                    <input type="button" className="btn" disabled={ YMoving } value="Fix position" onClick={ fixYPosition }></input>
+                </>
+                : ""
+            }
+            { experimentState.Started 
+                ? <Slider text="X-Axis" enabled={ !XMoving } onChange={ (event) => { sendMotorMoveBtn(event, "x") } }></Slider>
                 : ""
             }
             {/* <Slider text="Y-Axis" onChange={ (event) => { sendMotorMove(event, "y") } }></Slider> */}

@@ -1,10 +1,17 @@
 export class ExperimentState {
     COMPrepared: boolean = false
     YAxisPrepared: boolean = false
+    YAxisEndPosition: number = 0
     Started = false;
 
     public SetCOMPrepared(state: boolean) {
         this.COMPrepared = state
+        return this
+    }
+
+    public SetYAxisEndPositionn(position: number) {
+        this.YAxisEndPosition = position
+        this.YAxisPrepared = true
         return this
     }
 

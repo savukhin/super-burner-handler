@@ -18,6 +18,8 @@ export class SerialClient extends BaseClient {
     }
 
     Move(length: number, axis: "x" | "y") {
+        console.log(length);
+        
         return ipcRenderer.invoke("send-move", length, axis)
     }
 }

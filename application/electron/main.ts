@@ -43,6 +43,8 @@ app.on('ready', async () => {
   ipcMain.handle("get-coms", SerialClient.handleGetCOMs)
 
   ipcMain.handle("send-move",  (event, length, axis) => {
+    console.log("EVENT = ", event);
+    
     return serialClient.SendMoveHandler(event, length, axis)
   })
  
