@@ -43,14 +43,14 @@ private:
     bool doQuery(RawQuery query) {
       auto motorMove = MotorMoveQuery::isMotorMoveQuery(query);
       if (motorMove != std::nullopt) {
-        Serial.println("Motor move query");
+        // Serial.println("Motor move query");
         this->moveMotorCallback(motorMove.value());
         return true;
       }
 
       auto reductor = ReductorQuery::isReductorQuery(query); 
       if (reductor != std::nullopt) {
-        Serial.println("Reductor query");
+        // Serial.println("Reductor query");
         this->reductorCallback(reductor.value());
         return true;
       }
@@ -65,8 +65,8 @@ private:
       content = Serial.readString();
       content.trim();
 
-      Serial.print("content is ");
-      Serial.println(content);
+      // Serial.print("content is ");
+      // Serial.println(content);
 
       auto query = parseQuery(content);
       doQuery(query);
@@ -93,6 +93,10 @@ public:
 
     void send(std::vector<Chart> &charts) {
 
+    }
+
+    void sendResponse(int id, String message) {
+       Serial.println(String(id) + " " + message);
     }
 
     bool loop() {

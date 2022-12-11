@@ -32,6 +32,20 @@ std::optional<int> toInt(String str) {
   return result;
 }
 
+std::optional<unsigned int> toUInt(String str) {
+  auto result = toInt(str);
+  Serial.println("is opt?");
+  if (result == std::nullopt) {
+    Serial.println("opt");
+    return std::nullopt; 
+  }
+  Serial.println("value = " + String(result.value()));
+  if (result.value() < 0)
+    return std::nullopt; 
+
+  return result.value();
+}
+
 std::optional<float> toFloat(String str) {
   if (str.length() == 0)
     return 0;
@@ -86,6 +100,7 @@ String toString(char *data) {
 
 struct BaseQuery {
   bool valid = true;
+  unsigned int id = 0;
 };
 
 struct MotorMoveQuery : public BaseQuery {
@@ -93,7 +108,9 @@ struct MotorMoveQuery : public BaseQuery {
   bool x_axis;
 
   static std::optional<MotorMoveQuery> isMotorMoveQuery(RawQuery queries) {
-    if (queries.size() != 3) {
+    Serial.println("Start checking is motor move query");
+    
+    if (queries.size() != 4) {
       Serial.println("Size not two: " + String(queries.size()));
       for (int i = 0; i < queries.size(); i++) {
         Serial.println("Queries[" + String(i) + "] = '" + queries[i] + "'");
@@ -101,25 +118,32 @@ struct MotorMoveQuery : public BaseQuery {
       return std::nullopt;
     }
 
-    if (queries[0] != "motor-move") {
+    auto id = toUInt(queries[0]);
+    if (id == std::nullopt) {
+      Serial.println("Third param: " + queries[2]);
+      return std::nullopt;
+    }
+
+    if (queries[1] != "motor-move") {
       Serial.println("First param no motor-move: " + queries[0]);
       return std::nullopt;
     }
 
-    if (queries[1] != "x" && queries[1] != "y") {
-      Serial.println("Second param: '" + queries[1] + "'");
+    if (queries[2] != "x" && queries[2] != "y") {
+      Serial.println("Second param: '" + queries[2] + "'");
       return std::nullopt;
     }
     
-    auto position = toFloat(queries[2]);
+    auto position = toFloat(queries[3]);
     if (position == std::nullopt) {
-      Serial.println("Third param: " + queries[2]);
+      // Serial.println("Third param: " + queries[2]);
       return std::nullopt;
     }
 
     MotorMoveQuery result;
     result.valid = true;
-    result.x_axis = (queries[1][0] == 'x');
+    result.id = id.value();
+    result.x_axis = (queries[2][0] == 'x');
     result.position = position.value();
     return result;
   }
@@ -130,7 +154,7 @@ struct ReductorQuery : public BaseQuery {
   int reductor_number;
 
   static std::optional<ReductorQuery> isReductorQuery(RawQuery queries) {
-    if (queries.size() != 3) {
+    if (queries.size() != 4) {
       Serial.println("Size not two: " + String(queries.size()));
       for (int i = 0; i < queries.size(); i++) {
         Serial.println("Queries[" + String(i) + "] = '" + queries[i] + "'");
@@ -138,28 +162,35 @@ struct ReductorQuery : public BaseQuery {
       return std::nullopt;
     }
 
-    if (queries[0] != "reductor") {
-      Serial.println("First param not reductor: " + queries[1]);
+    auto id = toUInt(queries[0]);
+    if (id == std::nullopt) {
+      // Serial.println("Third param: " + queries[2]);
       return std::nullopt;
     }
 
-    auto number = toInt(queries[1]);
+    if (queries[1] != "reductor") {
+      // Serial.println("First param not reductor: " + queries[1]);
+      // return std::nullopt;
+    }
+
+    auto number = toInt(queries[2]);
     if (number == std::nullopt) {
-      Serial.println("Second param: '" + queries[1] + "'");
+      // Serial.println("Second param: '" + queries[1] + "'");
       return std::nullopt;
     }
     
-    auto percentage = toFloat(queries[2]);
+    auto percentage = toFloat(queries[3]);
     if (percentage == std::nullopt) {
-      Serial.println("Third param: " + queries[2]);
+      // Serial.println("Third param: " + queries[2]);
       return std::nullopt;
     }
 
-    Serial.println("params: " + queries[0] + " " + queries[1] + " " + queries[2]);
-    Serial.println("decoded: " + queries[0] + " " + String(number.value()) + " " + String(percentage.value()));
+    // Serial.println("params: " + queries[0] + " " + queries[1] + " " + queries[2]);
+    // Serial.println("decoded: " + queries[0] + " " + String(number.value()) + " " + String(percentage.value()));
 
     ReductorQuery result;
     result.valid = true;
+    result.id = id.value();
     result.reductor_number = number.value();
     result.open_percentage = percentage.value();
     return result;

@@ -1,8 +1,9 @@
 import { SerialPort } from 'serialport';
 
-
 export class SerialClient {
-    private serial?: SerialPort
+    serial?: SerialPort
+    answers = new Map<number, string>
+    nextId = 1
 
     constructor() {}
 
@@ -10,26 +11,27 @@ export class SerialClient {
         return (await SerialPort.list()).map(port => port.path)
     }
 
-    async SetPortHandler(event: Electron.IpcMainInvokeEvent, portName: string) {
-      
-        let serial = new SerialPort({ path: portName, baudRate: 115200 });
+    private generateId() {
+        this.nextId = this.nextId + 1
+        return this.nextId - 1;
+    }
 
-        
+    async SetPortHandler(event: Electron.IpcMainInvokeEvent, portName: string) {
+        let serial = new SerialPort({ path: portName, baudRate: 115200 });
 
         const checkOpened = await new Promise((resolve) => setTimeout(resolve, 300)).then(() => {
           return serial.isOpen
         })
 
-        console.log("opened? ", checkOpened);
-
         if (checkOpened == false) {
           return "Not connected! Reload program and try again"
         }
         
-        
         this.serial = serial;
-        // this.serial.
-        console.log("OPENING", portName, this.serial.port);
+        console.log(this.serial);
+        
+        
+        // console.log("OPENING", portName, this.serial.port);
      
           this.serial.on('error', function(err) {
             console.log('Error: ', err.message)
@@ -41,7 +43,8 @@ export class SerialClient {
             })
 
         var buffer = '';
-        this.serial.on('data', function(chunk) {
+        let obj = this
+        this.serial.on('data', async function(chunk) {
             // console.log('Data: ', data)
             buffer += chunk;
             var answers = buffer.split(/\r?\n/); // Split data by new line character or smth-else
@@ -54,6 +57,17 @@ export class SerialClient {
             let outputting = answers.filter((answer) => answer != 'content is ')
             if (outputting.length > 0)
                 console.log(outputting)
+                for (let i = 0; i < outputting.length; i++) {
+                    const splitted = outputting[i].split(" ");
+                    const id = parseInt(splitted[0])
+                    if (isNaN(id))
+                        continue
+                        
+                    console.log(`[0] = ${splitted[0]}; id = ${id}`);
+                    const msg = splitted.slice(1).join(" ")
+                    obj.answers.set(id, msg)
+                    console.log(`answers = ${JSON.stringify(answers)}`);
+                }
             // if (answers.length > 0) 
             //     sendData(200, answer[0]);
           })
@@ -61,20 +75,20 @@ export class SerialClient {
             console.log('Close: ')
           })
 
-          // this.serial.write('main screen turn on', function(err) {
-          //   if (err) {
-          //     return console.log('Error on write: ', err.message)
-          //   }
-          //   console.log('message written')
-          // })
-
-        console.log("OKOKOK");
-        
         return "ok"
 
     }
 
-    SendMoveHandler(event: Electron.IpcMainEvent, length: number, axis: "x" | "y") {
+    private async WaitForAnswer(id: number) {
+        while (!this.answers.has(id)) {
+            console.log(`step. answers = ${JSON.stringify(this.answers)}`);
+            await new Promise( resolve => setTimeout(resolve, 100) );
+        }
+
+        return this.answers.get(id)
+    }
+
+    async SendMoveHandler(event: Electron.IpcMainInvokeEvent, length: number, axis: "x" | "y") {
         console.log(`received request serial = ${this.serial}`);
         if (this.serial == undefined)
             return
@@ -83,18 +97,22 @@ export class SerialClient {
         
 
         console.log(axis, length);
-        
-        let request = "motor-move " + axis.toString() + " " + length.toString()
+        const id = this.generateId()
+        let request = `${id} motor-move ${axis.toString()} ${length.toString()}\n`
         console.log(`request is '${request}'`);
         
 
         // this.serial.write(Buffer.from(request), function(err) {
         this.serial.write(request, function(err) {
             if (err) {
-              return console.log('Error on write: ', err.message)
+                return console.log('Error on write: ', err.message)
             }
             console.log('message written')
-          })
+        })
+        // this.serial.flush()
+
+        // return "ok"
+        return await this.WaitForAnswer(id)
     }
 
 }

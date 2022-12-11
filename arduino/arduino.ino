@@ -62,10 +62,11 @@ void setup() {
         motorX.moveTo(query.position);
       else
         motorY.moveTo(query.position);
+      connector.sendResponse(query.id, "ok");
     });
 
     connector.setReductorCallback([](ReductorQuery query) {
-      Serial.println("Query reduct number " + String(query.reductor_number) + " NextPercentage: " + String(query.open_percentage));
+      // Serial.println("Query reduct number " + String(query.reductor_number) + " NextPercentage: " + String(query.open_percentage));
 
       switch (query.reductor_number) {
         case 1:
@@ -75,6 +76,7 @@ void setup() {
           motorReductor2.openPercentage(query.open_percentage);
           break;
       }
+      connector.sendResponse(query.id, "ok");
     });
 }
 

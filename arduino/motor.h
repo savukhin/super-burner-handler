@@ -50,7 +50,7 @@ public:
     delayMicroseconds(pd);
     digitalWrite(this->pinPull, LOW);
     delayMicroseconds(pd);
-    Serial.println(pd);
+    // Serial.println(pd);
   }
 
   void rotate(float degrees) {

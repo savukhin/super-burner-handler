@@ -17,7 +17,7 @@ export class SerialClient extends BaseClient {
         return []
     }
 
-    Move(length: number, axis: "x" | "y"): void {
-        ipcRenderer.send("send-move", length, axis)
+    Move(length: number, axis: "x" | "y") {
+        return ipcRenderer.invoke("send-move", length, axis)
     }
 }

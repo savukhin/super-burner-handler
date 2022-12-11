@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import './app.scss'
 import { BaseClient } from "./models/client/BaseClient";
 import { Main } from "./main";
+import { SerialClient } from "./models/client/SerialClient";
 
-export function App(props: { client: BaseClient }) {
+export function App(props: { client: SerialClient }) {
     const [error, setError] = useState<string>()
     const [isLoading, setIsLoading] = useState(true)
 

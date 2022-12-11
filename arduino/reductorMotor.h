@@ -14,7 +14,7 @@ public:
       digitalWrite(15, HIGH);
       delayMicroseconds(50);
       digitalWrite(15, LOW);
-      Serial.println("Wrote");
+      // Serial.println("Wrote");
       }
     // moveLength(percentage);
   }

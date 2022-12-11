@@ -39,11 +39,16 @@ function createWindow() {
 
 app.setUserTasks([])
 
-app.on('ready', () => {
+app.on('ready', async () => {
   ipcMain.handle("get-coms", SerialClient.handleGetCOMs)
 
-  ipcMain.on("send-move", serialClient.SendMoveHandler)
-  ipcMain.handle("chose-com", (event, portName) => { return serialClient.SetPortHandler(event, portName) })
+  ipcMain.handle("send-move",  (event, length, axis) => {
+    return serialClient.SendMoveHandler(event, length, axis)
+  })
+ 
+  ipcMain.handle("chose-com", (event, portName) => { 
+    return serialClient.SetPortHandler(event, portName);   
+  })
 
   createWindow();
 

@@ -4,9 +4,10 @@ import { ChartsView } from "./views/ChartsView/ChartsView";
 import { OptionsView } from "./views/OptionsView/OptionsView";
 import { Chart } from "./chart/chart";
 import './main.scss'
+import { SerialClient } from "./models/client/SerialClient";
 
 interface MainProps {
-    client: BaseClient
+    client: SerialClient
 }
 
 export function Main(props: MainProps) {

@@ -9,7 +9,7 @@ import { ExperimentState } from "../../models/Experiment/ExperimentState";
 
 
 interface OptionsViewProps {
-    client: BaseClient
+    client: SerialClient
     charts: MapChart
     onChartClick: (chart_id: number) => void
     onChartSettingsClick: (chart_id: number) => void
@@ -42,6 +42,7 @@ export function OptionsView(props: OptionsViewProps) {
     const [ experimentState, setExperimentState ] = useState(new ExperimentState());
     const [ chosenCOM, setChosenCOM ] = useState<string>()
     const [ errors, setErrors ] = useState<string[]>()
+    const [ XMoving, setXMoving ] = useState(false)
 
     useEffect(() => {
         refreshCOMs()
@@ -63,13 +64,20 @@ export function OptionsView(props: OptionsViewProps) {
         setCOMs(coms)
     }
 
-    function sendMotorMove(event: ChangeEvent<HTMLInputElement>, axis: "x" | "y") {
+    async function sendMotorMove(event: ChangeEvent<HTMLInputElement>, axis: "x" | "y") {
         const target = event.target
         if (target == null)
             return
         console.log("sended value", target.value);
         
-        props.client.Move(+target.value, axis)
+        setXMoving(true)
+
+        // await new Promise(async () => {
+            const response = await props.client.Move(+target.value, axis)
+            console.log(response);
+            
+            setXMoving(false)
+        // })
     }
 
     function startExperiment() {
@@ -86,8 +94,6 @@ export function OptionsView(props: OptionsViewProps) {
 
     async function connectCOM(com: string) {
         const response = (await props.client.ChoseCOM(com)).split(";")
-        console.log(response);
-        
         if (response.length == 1 && response[0] == "ok") {
             setExperimentState(value => { experimentState.SetCOMPrepared(true); return Object.create(experimentState) })
             
@@ -148,7 +154,10 @@ export function OptionsView(props: OptionsViewProps) {
                 : <></>
             }
 
-            <Slider text="X-Axis" onChange={ (event) => { sendMotorMove(event, "x") } }></Slider>
+            { experimentState.COMPrepared 
+                ? <Slider text="X-Axis" enabled={ !XMoving } onChange={ (event) => { sendMotorMove(event, "x") } }></Slider>
+                : ""
+            }
             {/* <Slider text="Y-Axis" onChange={ (event) => { sendMotorMove(event, "y") } }></Slider> */}
 
             { experimentState.IsReady() ? 

@@ -15,6 +15,18 @@ input[type='range'] {
     background: $text-color-light;
     height:7px;
     cursor: pointer;
+
+    &:disabled{ 
+        &::-webkit-slider-thumb {
+            background: black;
+        }
+
+        & {
+            background: black;
+            cursor: wait;
+        }
+    }
+    
 }
 
 input[type='range']::-webkit-slider-thumb {
@@ -27,4 +39,5 @@ input[type='range']::-webkit-slider-thumb {
 input[type='range']:hover {
     background-color: $bg-color-dark;
 }
+
 
