@@ -21,14 +21,18 @@ $text-color: black;
 $warning-color: #dd1212;
 
 :root {
-    --main-color: $main-color;
-    --bg-color-light: $bg-color-light;
-    --bg-color-light-2: $bg-color-light-2;
-    --bg-color-dark: $bg-color-dark;
-    --bg-color-dark-2: $bg-color-dark-2;
-    --block-color: $block-color;
-    --main-text-color: $main-text-color;
-    --bg-white: $bg-white;
+    --main-color: #{$main-color};
+    --bg-color-light: #{$bg-color-light};
+    --bg-color-light-2: #{$bg-color-light-2};
+    --bg-color-dark: #{$bg-color-dark};
+    --bg-color-dark-2: #{$bg-color-dark-2};
+    --block-color:#{$block-color};
+    --main-text-color: #{$main-text-color};
+    --bg-white: #{$bg-white};
 
-    --warning-color: $warning-color;
+    --text-color-light: #{$text-color-light};
+    --btn-color: #{$btn-color};
+    --btn-color-hover: #{$btn-color-hover};
+
+    --warning-color: #{$warning-color};
 }

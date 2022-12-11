@@ -15,14 +15,11 @@ interface OptionsViewProps {
 }
 
 const COMsStyles: StylesConfig = {
-    control: styles => ({ ...styles, backgroundColor: '#474238', borderColor: 'var(--bg-color-dark-2)',  color: 'white', overflow: "hidden" }),
-    dropdownIndicator: styles => ({ ...styles, backgroundColor: '#EB7F13',  color: 'blue' }),
+    control: styles => ({ ...styles, backgroundColor: 'var(--bg-color-dark)', borderColor: 'var(--bg-color-dark-2)',  color: 'var(--text-color-light)', overflow: "hidden" }),
+    dropdownIndicator: styles => ({ ...styles, backgroundColor: 'var(--main-color)',  color: 'var(--text-color-light)' }),
     
     indicatorSeparator: styles => ({ ...styles, display: "none" }),
-    // container: styles => ({ ...styles, backgroundColor: 'blue',  color: 'blue' }),
-    singleValue: styles => ({ ...styles, color: 'white' }),
-    // menu: styles => ({ ...styles, backgroundColor: 'lime',  color: 'blue' }),
-    // singleValue: styles => ({ ...styles, backgroundColor: 'pink',  color: 'blue' }),
+    singleValue: styles => ({ ...styles, color: 'var(--text-color-light)' }),
     option: (styles, { data, isDisabled, isFocused, isSelected }) => {
       return {
         ...styles,
