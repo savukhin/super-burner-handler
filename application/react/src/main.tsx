@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BaseClient } from "./client/BaseClient";
+import { BaseClient } from "./models/client/BaseClient";
 import { ChartsView } from "./views/ChartsView/ChartsView";
 import { OptionsView } from "./views/OptionsView/OptionsView";
 import { Chart } from "./chart/chart";

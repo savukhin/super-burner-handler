@@ -1,4 +1,4 @@
-import { Chart } from "../chart/chart";
+import { Chart } from "../../chart/chart";
 import { Axis, BaseClient, ClientState, Direction } from "./BaseClient";
 import { ipcRenderer } from "electron"
 

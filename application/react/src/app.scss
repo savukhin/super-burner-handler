@@ -3,12 +3,13 @@
 
 body {
     display: flex;
-    // background-color: $bg-color-light;
-    background: linear-gradient(-90deg, $bg-color-light 0%, $bg-color-light-2 100%);
+    background-color: $bg-color-dark;
+    // background: linear-gradient(-90deg, $bg-color-light 0%, $bg-color-light-2 100%);
     margin: 0;
     padding: $body-padding;
     height: calc(100vh - 2 * $body-padding);
     width: calc(100vw - 2 * $body-padding);
+    font-family: Arial,"Helvetica CY",Helvetica,"Nimbus Sans L",sans-serif;
 }
 
 #root {
@@ -33,9 +34,13 @@ body {
     opacity: 10%;
 }
 
+.warning {
+    color: $warning-color;
+}
+
 .block {
     border-radius: 10px;
-    // background-color: $block-color;
+    background-color: $block-color;
     overflow: overlay;
     padding: $block-padding;
 }

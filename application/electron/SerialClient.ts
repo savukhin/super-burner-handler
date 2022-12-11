@@ -10,11 +10,26 @@ export class SerialClient {
         return (await SerialPort.list()).map(port => port.path)
     }
 
-    SetPortHandler(event: Electron.IpcMainEvent, portName: string) {
-        this.serial = new SerialPort({ path: portName, baudRate: 115200 });
+    async SetPortHandler(event: Electron.IpcMainInvokeEvent, portName: string) {
+      
+        let serial = new SerialPort({ path: portName, baudRate: 115200 });
+
+        
+
+        const checkOpened = await new Promise((resolve) => setTimeout(resolve, 300)).then(() => {
+          return serial.isOpen
+        })
+
+        console.log("opened? ", checkOpened);
+
+        if (checkOpened == false) {
+          return "Not connected! Reload program and try again"
+        }
+        
+        
+        this.serial = serial;
         // this.serial.
         console.log("OPENING", portName, this.serial.port);
-        let serial = this.serial
      
           this.serial.on('error', function(err) {
             console.log('Error: ', err.message)
@@ -22,7 +37,7 @@ export class SerialClient {
 
           this.serial.on('open', function(msg) {
             console.log('Message: ', msg)
-            console.log("OPENING", portName, serial.port);
+            // console.log("OPENING", portName, serial.port);
             })
 
         var buffer = '';
@@ -46,12 +61,16 @@ export class SerialClient {
             console.log('Close: ')
           })
 
-          this.serial.write('main screen turn on', function(err) {
-            if (err) {
-              return console.log('Error on write: ', err.message)
-            }
-            console.log('message written')
-          })
+          // this.serial.write('main screen turn on', function(err) {
+          //   if (err) {
+          //     return console.log('Error on write: ', err.message)
+          //   }
+          //   console.log('message written')
+          // })
+
+        console.log("OKOKOK");
+        
+        return "ok"
 
     }
 

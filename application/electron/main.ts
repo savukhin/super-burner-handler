@@ -43,7 +43,7 @@ app.on('ready', () => {
   ipcMain.handle("get-coms", SerialClient.handleGetCOMs)
 
   ipcMain.on("send-move", serialClient.SendMoveHandler)
-  ipcMain.on("chose-com", serialClient.SetPortHandler)
+  ipcMain.handle("chose-com", (event, portName) => { return serialClient.SetPortHandler(event, portName) })
 
   createWindow();
 

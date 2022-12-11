@@ -1,6 +1,6 @@
 import React from "react";
 import './ChartsView.scss'
-import { BaseClient } from "../../client/BaseClient";
+import { BaseClient } from "../../models/client/BaseClient";
 import { ChartComponent } from "../../components/chart/chart";
 import { Chart, MapChart } from "../../chart/chart";
 

@@ -1,7 +1,7 @@
 @import '../../scss exports/colors';
 
 .options-wrapper > * {
-    margin-bottom: 5px;
+    margin-bottom: 0.3em;
 }
 
 input {
@@ -15,6 +15,7 @@ input[type='text'] {
     background-color: $bg-color-dark;
     border-radius: 4px;
     border: solid 1px $bg-color-dark-2;
+    color: $text-color;
 }
 input[type='text']:focus {
     border: solid 1px $btn-color;
@@ -27,6 +28,8 @@ input[type='text']:focus {
     border-radius: 3px;
     border: none;
     color: $text-color-light;
+
+    padding: 0.3em 0;
 }
 
 .btn:disabled, button[disabled] {

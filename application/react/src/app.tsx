@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './app.scss'
-import { BaseClient } from "./client/BaseClient";
+import { BaseClient } from "./models/client/BaseClient";
 import { Main } from "./main";
 
 export function App(props: { client: BaseClient }) {

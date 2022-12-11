@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './app';
-import { DummyClient } from './client/DummyClient';
-import { SerialClient } from './client/SerialClient';
+import { DummyClient } from './models/client/DummyClient';
+import { SerialClient } from './models/client/SerialClient';
 
 const docRoot = document.getElementById('root')
 if (!docRoot) {

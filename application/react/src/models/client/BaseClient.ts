@@ -1,4 +1,4 @@
-import { Chart } from "../chart/chart"
+import { Chart } from "../../chart/chart"
 import { ipcRenderer } from "electron"
 
 export class ClientState {
@@ -18,15 +18,12 @@ export abstract class BaseClient {
     abstract GetCharts(): Chart[]
 
     GetCOMs(): Promise<string[]> {
-        const coms = ipcRenderer.invoke("get-coms")
-        console.log(coms);
-        
-        return coms
+        return ipcRenderer.invoke("get-coms")
     }
 
-    ChoseCOM(COM: string) {
-        console.log("chose", COM);
-        ipcRenderer.send("chose-com", COM)
+    async ChoseCOM(COM: string) {
+        const res = await ipcRenderer.invoke("chose-com", COM)
+        return res as string
     }
 
     abstract Move(length: number, axis: "x" | "y"): void
