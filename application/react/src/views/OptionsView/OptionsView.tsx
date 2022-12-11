@@ -6,7 +6,7 @@ import { Slider } from "../../components/slider/slider";
 import './OptionsView.scss'
 import Select, { StylesConfig } from 'react-select';
 import { ExperimentState, IPosition, IPositions } from "../../models/Experiment/ExperimentState";
-
+import { ipcRenderer } from "electron";
 
 interface OptionsViewProps {
     client: SerialClient
@@ -46,10 +46,7 @@ export function OptionsView(props: OptionsViewProps) {
     const [ YPosition, setYPosition ] = useState(0)
     const [ XMoving, setXMoving ] = useState(false)
     const [ XPosition, setXPosition ] = useState(0)
-    const X1InputRef = useRef<HTMLInputElement>(null)
-    const X2InputRef = useRef<HTMLInputElement>(null)
-    const YInputRef = useRef<HTMLInputElement>(null)
-    const stepInputRef = useRef<HTMLInputElement>(null)
+    const [ stepRange, setStepRange] = useState(0)
     const [ currentPosition, setCurrentPosition ] = useState<IPosition>({x: 0, y: 0})
 
     useEffect(() => {
@@ -94,6 +91,10 @@ export function OptionsView(props: OptionsViewProps) {
         // })
     }
 
+    function showErrorAlert(msg: string) {
+        ipcRenderer.invoke("show-message-box", msg)
+    }
+
     async function sendMotorMoveBtn(event: ChangeEvent<HTMLInputElement>, axis: "x" | "y") {
         const target = event.target
         if (target == null)
@@ -106,7 +107,7 @@ export function OptionsView(props: OptionsViewProps) {
         sendMotorMove(position, axis)
     }
 
-    function startExperiment() {
+    async function startExperiment() {
         experimentState.Start()
         setExperimentState(Object.create(experimentState))
     }
@@ -150,15 +151,8 @@ export function OptionsView(props: OptionsViewProps) {
     }
 
     async function moveArrowClick(direction: "up" | "left" | "down" | "right") {
-        const step = +(stepInputRef.current!.value)
-        console.log(step);
-        console.log(currentPosition.x + step);
+        const step = stepRange
         
-        if (isNaN(step)) {
-            alert ("Type number in the step field!")
-            return
-        }
-
         switch (direction) {
             case "up":
                 await sendMotorMove(currentPosition.x + step, "x")
@@ -169,15 +163,66 @@ export function OptionsView(props: OptionsViewProps) {
                 currentPosition.x -= step
                 break;
 
-            case "left":
+            case "right":
                 await sendMotorMove(currentPosition.y + step, "y")
                 currentPosition.y += step
                 break;
-            case "right":
+            case "left":
                 await sendMotorMove(currentPosition.y - step, "y")
                 currentPosition.y -= step
                 break;
         }
+    }
+
+    function setExperimentPosition(point: "x1" | "x2" | "y") {
+        switch (point) {
+            case "x1":
+                experimentState.positions.x1_end = currentPosition.x
+                break;
+            case "x2":
+                experimentState.positions.x2_end = currentPosition.x
+                break;
+            case "y":
+                experimentState.positions.y_start = currentPosition.y
+                break;
+        }
+
+        setExperimentState(Object.create(experimentState))
+    }
+
+    function onChangeEndPosition(event: React.ChangeEvent<HTMLInputElement>, point: "x1" | "x2" | "y") {
+        const value = +event.target.value
+        if (isNaN(value)) {
+            showErrorAlert("Value must be number!")
+            return
+        }
+
+        switch (point) {
+            case "x1":
+                experimentState.positions.x1_end = value
+                break;
+            case "x2":
+                experimentState.positions.x2_end = value
+                break;
+            case "y":
+                experimentState.positions.y_start = value
+                break;
+        }
+
+        setExperimentState(Object.create(experimentState))
+    }
+
+    function onChangeStep(event: React.ChangeEvent<HTMLInputElement>) {
+        const step = +event.target.value
+        if (isNaN(step)) { 
+            showErrorAlert("Type number!")
+            return
+        }
+
+        setStepRange(step)
+    }
+
+    async function forceStopExperiment() {
 
     }
 
@@ -188,42 +233,46 @@ export function OptionsView(props: OptionsViewProps) {
                 <fieldset className="position-options-wrapper">
                     <div className="labeled-parameter">
                         <span>Step:</span>
-                        <input type="text" placeholder="Step in mm - Type number" ref={ stepInputRef } ></input>
+                        <input type="text" placeholder="Step in mm - Type number" value={ stepRange } onChange={ onChangeStep } ></input>
                         <span>mm</span>
                     </div>
                     <div className="direction-arrows-wrapper">
-                        <button disabled={ XMoving || YMoving } className="btn arrow-top" onClick={() => { moveArrowClick("up") }}>↑</button>
-                        <button disabled={ XMoving || YMoving } className="btn arrow-left" onClick={() => { moveArrowClick("left") }}>←</button>
-                        <button disabled={ XMoving || YMoving } className="btn arrow-bottom" onClick={() => { moveArrowClick("down") }}>↓</button>
-                        <button disabled={ XMoving || YMoving } className="btn arrow-right" onClick={() => { moveArrowClick("right") }}>→</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-top" onClick={() => { moveArrowClick("up") }}>↑</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-left" onClick={() => { moveArrowClick("left") }}>←</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-bottom" onClick={() => { moveArrowClick("down") }}>↓</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { moveArrowClick("right") }}>→</button>
                     </div>
 
                     <h3>Current position</h3>
                     <div className="labeled-parameter">
                         <span>X:</span>
-                        <input type="text" readOnly value={ currentPosition.x }></input>
+                        <input type="text" style={{ pointerEvents: "none" }} readOnly value={ currentPosition.x }></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
                         <span>Y:</span>
-                        <input type="text" readOnly value={ currentPosition.y }></input>
+                        <input type="text" style={{ pointerEvents: "none" }} readOnly value={ currentPosition.y }></input>
                         <span>mm</span>
                     </div>
+
+                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("x1") }}> Set X1 end position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("x2") }}> Set X2 end position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("y") }}> Set Y start position</button>
                 </fieldset>
                 <fieldset className="fixed-values">
                     <div className="labeled-parameter">
                         <span>X1</span>
-                        <input type="text" ref={ X1InputRef } readOnly value={0}></input>
+                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x1_end } onChange={(event) => { onChangeEndPosition(event, "x1") }}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
                         <span>X2</span>
-                        <input type="text" ref={ X2InputRef } readOnly value={0}></input>
+                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x2_end } onChange={(event) => { onChangeEndPosition(event, "x2") }}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
                         <span>Y</span>
-                        <input type="text" ref={ YInputRef } readOnly value={0}></input>
+                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.y_start } onChange={(event) => { onChangeEndPosition(event, "y") }}></input>
                         <span>mm</span>
                     </div>
                 </fieldset>
@@ -232,7 +281,7 @@ export function OptionsView(props: OptionsViewProps) {
                         <input type="text" placeholder="Speed"></input> <span>mm/s</span>
                     </div>
                     <button disabled={ !experimentState.IsReadyToStart() } className="btn" onClick={ startExperiment }>Start experiment</button>
-                    <button disabled={ !experimentState.Started } className="btn btn-warning">Stop</button>
+                    <button disabled={ !experimentState.Started } className="btn btn-warning" onClick={ forceStopExperiment }>Stop</button>
                 </fieldset>
             </div>
         )

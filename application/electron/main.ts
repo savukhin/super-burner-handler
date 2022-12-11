@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { SerialClient } from './SerialClient';
@@ -35,6 +35,7 @@ function createWindow() {
 
   mainWindow.webContents.openDevTools()
   mainWindow.setMenu(null)
+
 }
 
 app.setUserTasks([])
@@ -51,6 +52,16 @@ app.on('ready', async () => {
   ipcMain.handle("chose-com", (event, portName) => { 
     return serialClient.SetPortHandler(event, portName);   
   })
+
+  ipcMain.handle("show-message-box", (event, msg) => {
+    dialog.showMessageBox({ 
+      type: "error",
+      title: "error",
+      message: msg 
+    })
+  })
+
+  
 
   createWindow();
 

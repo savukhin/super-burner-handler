@@ -13,7 +13,7 @@ export class ExperimentState {
     COMPrepared: boolean = false
     YAxisPrepared: boolean = false
     YAxisEndPosition: number = 0
-    positions?: IPositions
+    positions: IPositions = { x1_end: 0, x2_end: 0, y_start: 0}
     Started = false;
 
     public SetCOMPrepared(state: boolean) {
@@ -35,13 +35,11 @@ export class ExperimentState {
         return this.COMPrepared 
                 // && this.YAxisPrepared
                 && !this.Started
-                && this.positions
     }
 
     public IsReady() {
         return this.COMPrepared 
                 // && this.YAxisPrepared
-                && this.positions
     }
 
     public Start() {
