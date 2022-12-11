@@ -1,7 +1,14 @@
+export interface IPositions {
+    x1_end: number
+    x2_end: number
+    y_start: number
+}
+
 export class ExperimentState {
     COMPrepared: boolean = false
     YAxisPrepared: boolean = false
     YAxisEndPosition: number = 0
+    positions?: IPositions
     Started = false;
 
     public SetCOMPrepared(state: boolean) {
@@ -15,10 +22,15 @@ export class ExperimentState {
         return this
     }
 
+    public SetPositions(positions: IPositions) {
+        this.positions = positions
+    }
+
     public IsReady() {
         return this.COMPrepared 
-                && this.YAxisPrepared
+                // && this.YAxisPrepared
                 && !this.Started
+                && this.positions
     }
 
     public Start() {

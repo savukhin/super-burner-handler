@@ -8,7 +8,7 @@ input {
     width: fill-available;
     width: -webkit-fill-available;
     width: -moz-available;
-    margin-top: 7px;
+    // margin-top: 7px;
 }
 
 input[type='text'] {
@@ -23,10 +23,16 @@ input[type='text']:focus {
 }
 
 .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     background-color: $btn-color;
     border-radius: 3px;
     border: none;
+    border: 1px solid $bg-color-light-2;
+    // text-align: center;
+
     color: $text-color-light;
 
     padding: 0.3em 0;
@@ -45,6 +51,14 @@ input[type='text']:focus {
     color: $text-color-light;
 }
 
+.btn-warning {
+    background-color: $warning-color;
+}
+
+.btn-warning:hover:enabled {
+    background-color: $warning-color-2;
+}
+
 .btn-no-left-radius {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -59,4 +73,95 @@ input[type='text']:focus {
 .chart-option {
     display: grid;
     grid-template-columns: auto 20px;
+}
+
+.controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    fieldset {
+        border-radius: 4px;
+        border: 1px solid $absolute-hint-color;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        * {
+            margin-top: 5px;
+        }
+    }
+}
+
+.labeled-input {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    span {
+        margin-left: 5px;
+    }
+}
+
+.direction-arrows-wrapper {
+    display: grid;
+    grid-template-columns: 30% 30% 30%;
+    gap: 5%;
+    grid-template-rows: 50% 50%;
+    width: 80%;
+
+    & * {
+        // background-color: $bg-color-light-2;
+        // border: 1px solid $frame-color;
+        // border-radius: 0.3em;
+        width: 2em;
+        height: 2em;
+        // margin: 0.1em;
+        display: flex;
+        justify-self: center;
+        align-items: center;
+
+        font-size: larger;
+    }
+
+    .arrow-top {
+        grid-row: 1;
+        grid-column: 2;
+    }
+
+    .arrow-left {
+        grid-row: 2;
+        grid-column: 1;
+    }
+    .arrow-bottom {
+        grid-row: 2;
+        grid-column: 2;
+    }
+    .arrow-right {
+        grid-row: 2;
+        grid-column: 3;
+    }
+}
+
+.run-fieldset {
+    > * {
+        width: 100%;
+    }
+}
+
+.labeled-parameter {
+    display: grid;
+    grid-template-columns: 10px 50% 10px;
+    width: 100%;
+
+    input {
+        margin-left: 5px;
+        margin-right: 5px;
+
+        cursor: initial;
+    }
 }

@@ -144,6 +144,49 @@ export function OptionsView(props: OptionsViewProps) {
         sendMotorMove(0, "y")
     }
 
+    function generateControls() {
+        return (
+            <div className="controls-wrapper">
+                {/* <Slider text="X-Axis" enabled={ !XMoving } onChange={ (event) => { sendMotorMoveBtn(event, "x") } }></Slider> */}
+                <fieldset>
+                    <div className="labeled-input">
+                        <input type="text" placeholder="Step"></input> <span>mm</span>
+                    </div>
+                    <div className="direction-arrows-wrapper">
+                        <button className="btn arrow-top">↑</button>
+                        <button className="btn arrow-left">←</button>
+                        <button className="btn arrow-bottom">↓</button>
+                        <button className="btn arrow-right">→</button>
+                    </div>
+                </fieldset>
+                <fieldset className="fixed-values">
+                    <div className="labeled-parameter">
+                        <span>X1</span>
+                        <input type="text" readOnly value={0}></input>
+                        <span>mm</span>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>X2</span>
+                        <input type="text" readOnly value={0}></input>
+                        <span>mm</span>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>Y</span>
+                        <input type="text" readOnly value={0}></input>
+                        <span>mm</span>
+                    </div>
+                </fieldset>
+                <fieldset className="run-fieldset">
+                    <div className="labeled-input">
+                        <input type="text" placeholder="Speed"></input> <span>mm/s</span>
+                    </div>
+                    <button className="btn">Start experiment</button>
+                    <button className="btn btn-warning">Stop</button>
+                </fieldset>
+            </div>
+        )
+    }
+
     return (
         <div className="options-wrapper">
             {/* <input className="text-input" type="text" placeholder="A?"></input> */}
@@ -180,6 +223,11 @@ export function OptionsView(props: OptionsViewProps) {
                 : <></>
             }
 
+            { experimentState.COMPrepared 
+                ? generateControls()
+                : ""
+            }
+
             { experimentState.COMPrepared && !experimentState.YAxisPrepared 
                 ? <>
                     <Slider text="Y-Axis" enabled={ !YMoving } onChange={ (event) => { sendMotorMoveBtn(event, "y") } }></Slider>
@@ -188,7 +236,7 @@ export function OptionsView(props: OptionsViewProps) {
                 : ""
             }
             { experimentState.Started 
-                ? <Slider text="X-Axis" enabled={ !XMoving } onChange={ (event) => { sendMotorMoveBtn(event, "x") } }></Slider>
+                ? generateControls()
                 : ""
             }
             {/* <Slider text="Y-Axis" onChange={ (event) => { sendMotorMove(event, "y") } }></Slider> */}
