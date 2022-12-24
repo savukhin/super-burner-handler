@@ -16,6 +16,7 @@ private:
   float stepDegree;
   float position;
   float speedMultiplier;
+  bool invertDIR;
 
   int getPulseDelay() {
     int pulse_min = pulse_rev * rev_min;
@@ -29,7 +30,9 @@ private:
 
 
 public:
-  Motor(int pulse_rev, float valveRadiusMM=2, float speedMultiplier=1) {
+  Motor(int pulse_rev, float valveRadiusMM=2, bool invertDIR=false, float speedMultiplier=1) {
+    this->invertDIR = invertDIR;
+
     this->valveLenghtMM = 2 * M_PI * valveRadiusMM;
     this->valveLenghtPerDegree = this->valveLenghtMM / 360;
 
@@ -65,20 +68,31 @@ public:
   }
 
   void restart() {
-    delayMicroseconds(this->getPulseDelay());
+    Logging::debug("start restart");
     digitalWrite(this->pinEna, LOW);
-    delay(1000);
-    // delayMicroseconds(5 * this->getPulseDelay());
+    delay(200);
+
     digitalWrite(this->pinEna, HIGH);
+    Logging::debug("end restart");
+  }
+
+  void refreshZeroPosition() {
+    this->position = 0;
   }
 
   void makeSteps(float steps) {
-    Logging::debug("steps = " + String(steps));
-    Logging::debug("stepDegree = " + String(this->stepDegree));
-
     boolean dir = HIGH;
     if (steps < 0)
       dir = LOW;
+
+    if (this->invertDIR) {
+      if (dir == HIGH)
+        dir = LOW;
+      else
+        dir = HIGH;
+    }
+    Logging::debug("dir = " + String(dir));
+    Logging::debug("steps = " + String(steps));
 
     digitalWrite(this->pinDir, dir);
 
@@ -96,6 +110,10 @@ public:
     this->restart();
   }
 
+  float getPosition() {
+    return this->position;
+  }
+
   void rotate(float degrees) {
     float steps = degrees / this->stepDegree;
     // int steps = ceil(abs(degrees) / this->stepDegree);
@@ -105,11 +123,6 @@ public:
 
   void moveLength(float lenght) {
     float degrees = lenght / this->valveLenghtPerDegree;
-    Logging::debug("stepDegree = " + String(stepDegree));
-    Logging::debug("lenght = " + String(lenght));
-    Logging::debug("this->valveLenghtMM  = " + String(this->valveLenghtMM));
-    Logging::debug("this->valveLenghtPerDegree = " + String(this->valveLenghtPerDegree));
-    Logging::debug("Degrees = " + String(degrees));
     // this->rotate(degrees);
 
     float steps = this->pulse_rev * (lenght / this->valveLenghtMM);

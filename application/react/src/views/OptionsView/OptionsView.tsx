@@ -49,6 +49,7 @@ export function OptionsView(props: OptionsViewProps) {
     const [ stepRange, setStepRange] = useState(0)
     const [ currentSpeed, setCurrentSpeed] = useState(0)
     const [ currentPosition, setCurrentPosition ] = useState<IPosition>({x: 0, y: 0})
+    const [ blockedButtons, setBlockedButtons ] = useState(false)
 
     useEffect(() => {
         refreshCOMs()
@@ -83,12 +84,14 @@ export function OptionsView(props: OptionsViewProps) {
             console.log(response);
             
             if (axis == "x") {
-                setXPosition(position)
+                setXPosition(response)
                 setXMoving(false)
             } else {
-                setYPosition(position)
+                setYPosition(response)
                 setYMoving(false)
             }
+
+            return response
         // })
     }
 
@@ -115,6 +118,7 @@ export function OptionsView(props: OptionsViewProps) {
         await sendMotorMove(0, "x")
         await sendMotorMove(experimentState.positions.y_start, "y")
         console.log("Init position");
+        await setTimeout(() => {}, 1000)
         
         await sendMotorMove(experimentState.positions.x1_end, "x")
         await setTimeout(() => {}, 500)
@@ -151,15 +155,30 @@ export function OptionsView(props: OptionsViewProps) {
     }
 
     async function connectCOM(com: string) {
-        const response = (await props.client.ChoseCOM(com)).split(";")
-        if (response.length == 1 && response[0] == "ok") {
-            setExperimentState(value => { experimentState.SetCOMPrepared(true); return Object.create(experimentState) })
-            
-            return true
+        setBlockedButtons(true)
+
+        const response1 = (await props.client.ChoseCOM(com)).split(";")
+        if (!(response1.length == 1 && response1[0] == "ok")) {
+            setErrors(response1)
+            setBlockedButtons(false)
+
+            return false
         }
+
+
+        const response2 = (await props.client.Calibrate()).split(";")
+        if (!(response2.length == 1 && response2[0] == "ok")) {
+            setErrors(response2)
+            setBlockedButtons(false)
+
+            return false
+        }
+
+        setExperimentState(value => { experimentState.SetCOMPrepared(true); return Object.create(experimentState) })
+
+        setBlockedButtons(false)
         
-        setErrors(response)
-        
+        return true
     }
 
     function generateErrors(errors: string[] | undefined) {
@@ -183,26 +202,33 @@ export function OptionsView(props: OptionsViewProps) {
 
     async function moveArrowClick(direction: "up" | "left" | "down" | "right") {
         const step = stepRange
+        let position = 0
         
         switch (direction) {
             case "up":
-                await sendMotorMove(currentPosition.x + step, "x")
-                currentPosition.x += step
+                position = await sendMotorMove(currentPosition.y + step, "y")
+                // currentPosition.y += step
+                currentPosition.y = position
                 break;
             case "down":
-                await sendMotorMove(currentPosition.x - step, "x")
-                currentPosition.x -= step
+                position = await sendMotorMove(currentPosition.y - step, "y")
+                // currentPosition.y -= step
+                currentPosition.y = position
                 break;
 
             case "right":
-                await sendMotorMove(currentPosition.y + step, "y")
-                currentPosition.y += step
+                position = await sendMotorMove(currentPosition.x - step, "x")
+                // currentPosition.x += step
+                currentPosition.x = position
                 break;
             case "left":
-                await sendMotorMove(currentPosition.y - step, "y")
-                currentPosition.y -= step
+                position = await sendMotorMove(currentPosition.x + step, "x")
+                // currentPosition.x -= step
+                currentPosition.x = position
                 break;
         }
+
+        setCurrentPosition(Object.create(currentPosition))
     }
 
     function setExperimentPosition(point: "x1" | "x2" | "y") {
@@ -342,7 +368,7 @@ export function OptionsView(props: OptionsViewProps) {
 
             { !experimentState.COMPrepared ? 
             <>
-                <input type="button" className="btn" value="Refresh COMs" onClick={ refreshCOMs }></input>
+                <input type="button" disabled={ blockedButtons } className="btn" value="Refresh COMs" onClick={ refreshCOMs }></input>
                 {/* <select onChange={ (event) => { console.log("Changed!");
                 if (event.target) props.client.ChoseCOM(event.target.value) } }>
                     { COMs.map((port, ind) => (
@@ -356,10 +382,11 @@ export function OptionsView(props: OptionsViewProps) {
                     isSearchable={false}
                     onChange={ (newValue) => { onChangeCOM(newValue as IOptionValue) } }
                     styles={COMsStyles}
+                    isDisabled={ blockedButtons }
                 />
 
                 { chosenCOM ?
-                    <input type="button" className="btn" value="Connect COM" onClick={ () => connectCOM(chosenCOM) }></input>
+                    <input disabled={ blockedButtons } type="button" className="btn" value="Connect COM" onClick={ () => connectCOM(chosenCOM) }></input>
                     : ""
                 }
             </>

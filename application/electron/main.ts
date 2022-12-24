@@ -44,13 +44,15 @@ app.on('ready', async () => {
   ipcMain.handle("get-coms", SerialClient.handleGetCOMs)
 
   ipcMain.handle("send-move",  (event, length, axis) => {
-    console.log("EVENT = ", event);
-    
     return serialClient.SendMoveHandler(event, length, axis)
   })
  
   ipcMain.handle("chose-com", (event, portName) => { 
     return serialClient.SetPortHandler(event, portName);   
+  })
+
+  ipcMain.handle("calibrate",  (event, length, axis) => {
+    return serialClient.SendCalibrateHandler(event)
   })
 
   ipcMain.handle("show-message-box", (event, msg) => {

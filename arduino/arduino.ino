@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <Thread.h>
+#include <Math.h>
 
 #include "logging.h"
 #include "connector.h"
@@ -30,10 +31,14 @@
 #define D27 27
 #define D26 26
 
+const float MAX_X_MM = 180;
+const float MAX_Y_MM = 260;
+
 Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
-Motor motorX(800, 19, 0.1);
-Motor motorY(200, 4.1);
+Motor motorX(200, 19, true, 0.1);
+Motor motorY(200, 0.41, true);
+// Motor motorY(200, 4.1);
 
 ReductorMotor motorReductor1(200);
 ReductorMotor motorReductor2(200);
@@ -66,13 +71,31 @@ void setup() {
     // motorReductor1.setup(D8, D2);
     // motorReductor2.setup(5, 0);
 
-
     connector.setMotorMoveCallback([](MotorMoveQuery query) {
       Logging::debug("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
+      float final_position = query.position + (query.x_axis ? motorX.getPosition() : motorY.getPosition());
+      final_position = max(0.f, query.position);
+
       if (query.x_axis)
-        motorX.moveTo(query.position);
+        motorX.moveLength(min(MAX_X_MM, final_position));
       else
-        motorY.moveTo(query.position);
+        motorY.moveLength(min(MAX_Y_MM, final_position));
+    
+      connector.sendResponse(query.id, "{ \"final_position\": " + String(final_position) + " }");
+    });
+
+    connector.setCalibrateXYMotorsCallback([](CalibrateXYMotorsQuery query) {
+      Logging::debug("Query calibrate motor");
+
+      motorX.moveTo(-MAX_X_MM);
+      Logging::debug("Calibrated X");
+      motorY.moveTo(-MAX_Y_MM);
+      Logging::debug("Calibrated Y");
+
+      motorX.refreshZeroPosition();
+      motorY.refreshZeroPosition();
+      Logging::debug("Refreshed positions");
+
       connector.sendResponse(query.id, "ok");
     });
 

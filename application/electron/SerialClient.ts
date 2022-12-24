@@ -112,6 +112,28 @@ export class SerialClient {
         // this.serial.flush()
 
         // return "ok"
+        const response_from_serial = await this.WaitForAnswer(id)
+        if (!response_from_serial)
+            return response_from_serial
+
+        const json = JSON.parse(response_from_serial) as { final_position: string }
+        return json.final_position
+    }
+
+    async SendCalibrateHandler (ievent: Electron.IpcMainInvokeEvent) {
+        if (this.serial == undefined)
+            return
+
+        const id = this.generateId()
+
+        let request = `${id} calibrate-xy-motors\n`
+        this.serial.write(request, function(err) {
+            if (err) {
+                return console.log('Error on write: ', err.message)
+            }
+            console.log('message written')
+        })
+
         return await this.WaitForAnswer(id)
     }
 

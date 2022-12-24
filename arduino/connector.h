@@ -14,6 +14,7 @@ class Connector {
 private:
     void(*moveMotorCallback)(MotorMoveQuery);
     void(*reductorCallback)(ReductorQuery);
+    void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery);
 
     bool doQuery(RawQuery query) {
       auto motorMove = MotorMoveQuery::isMotorMoveQuery(query);
@@ -27,6 +28,13 @@ private:
       if (reductor != nullptr) {
         // Logging::debug("Reductor query");
         this->reductorCallback(*reductor);
+        return true;
+      }
+
+      auto calibrate = CalibrateXYMotorsQuery::isCalibrateQuery(query); 
+      if (calibrate != nullptr) {
+        // Logging::debug("Calibrate query");
+        this->calibrateXYMotorsCallback(*calibrate);
         return true;
       }
 
@@ -59,6 +67,9 @@ public:
     }
     void setReductorCallback(void(*reductorCallback)(ReductorQuery)) {
       this->reductorCallback = reductorCallback;
+    }
+    void setCalibrateXYMotorsCallback(void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery)) {
+      this->calibrateXYMotorsCallback = calibrateXYMotorsCallback;
     }
 
     void send(std::vector<Chart> &charts) {
