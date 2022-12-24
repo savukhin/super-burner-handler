@@ -73,13 +73,13 @@ void setup() {
 
     connector.setMotorMoveCallback([](MotorMoveQuery query) {
       Logging::debug("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
-      float final_position = query.position + (query.x_axis ? motorX.getPosition() : motorY.getPosition());
-      final_position = max(0.f, query.position);
+      // float final_position = query.position + (query.x_axis ? motorX.getPosition() : motorY.getPosition());
+      float final_position = max(0.f, query.position);
 
       if (query.x_axis)
-        motorX.moveLength(min(MAX_X_MM, final_position));
+        motorX.moveTo(min(MAX_X_MM, final_position));
       else
-        motorY.moveLength(min(MAX_Y_MM, final_position));
+        motorY.moveTo(min(MAX_Y_MM, final_position));
     
       connector.sendResponse(query.id, "{ \"final_position\": " + String(final_position) + " }");
     });

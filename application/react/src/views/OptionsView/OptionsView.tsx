@@ -115,29 +115,27 @@ export function OptionsView(props: OptionsViewProps) {
         experimentState.Start()
         setExperimentState(Object.create(experimentState))
 
+        const MAX_Y = 190;
+        await sendMotorMove(0, "y")
         await sendMotorMove(0, "x")
-        await sendMotorMove(experimentState.positions.y_start, "y")
-        console.log("Init position");
-        await setTimeout(() => {}, 1000)
-        
+
         await sendMotorMove(experimentState.positions.x1_end, "x")
-        await setTimeout(() => {}, 500)
-        console.log("X1");
-
-        await sendMotorMove(0, "y")
-        await setTimeout(() => {}, 500)
         await sendMotorMove(experimentState.positions.y_start, "y")
-        console.log("Init position");
-
         await setTimeout(() => {}, 1000)
-        await sendMotorMove(experimentState.positions.x2_end, "x")
-        console.log("X2");
-        
-        await setTimeout(() => {}, 500)
-        await sendMotorMove(0, "y")
+
+        await sendMotorMove(MAX_Y, "y")
         await setTimeout(() => {}, 500)
 
         await sendMotorMove(experimentState.positions.y_start, "y")
+        await setTimeout(() => {}, 500)
+        await sendMotorMove(experimentState.positions.x2_end, "x")
+
+        await setTimeout(() => {}, 500)
+        await sendMotorMove(MAX_Y, "y")
+        await setTimeout(() => {}, 500)
+        await sendMotorMove(experimentState.positions.y_start, "y")
+        
+        await sendMotorMove(0, "y")
         await sendMotorMove(0, "x")
 
         console.log("Ended");
@@ -344,13 +342,13 @@ export function OptionsView(props: OptionsViewProps) {
                     </div>
                 </fieldset>
                 <fieldset className="run-fieldset">
-                    <div className="labeled-parameter">
+                    {/* <div className="labeled-parameter">
                         <span>Speed</span>
                         <input type="text" disabled={ experimentState.Started } placeholder="Speed" value={ currentSpeed } onChange={ onChangeSpeed }></input>
                         <span>mm/s</span>
-                    </div>
+                    </div> */}
                     <button disabled={ !experimentState.IsReadyToStart() } className="btn" onClick={ startExperiment }>Start experiment</button>
-                    <button disabled={ !experimentState.Started } className="btn btn-warning" onClick={ forceStopExperiment }>Stop</button>
+                    {/* <button disabled={ !experimentState.Started } className="btn btn-warning" onClick={ forceStopExperiment }>Stop</button> */}
                 </fieldset>
             </div>
         )

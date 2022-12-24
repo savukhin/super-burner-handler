@@ -51,7 +51,7 @@ app.on('ready', async () => {
     return serialClient.SetPortHandler(event, portName);   
   })
 
-  ipcMain.handle("calibrate",  (event, length, axis) => {
+  ipcMain.handle("calibrate",  (event) => {
     return serialClient.SendCalibrateHandler(event)
   })
 
