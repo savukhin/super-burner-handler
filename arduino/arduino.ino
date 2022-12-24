@@ -2,6 +2,7 @@
 #include <vector>
 #include <Thread.h>
 
+#include "logging.h"
 #include "connector.h"
 #include "sensor.h"
 #include "motor.h"
@@ -60,7 +61,7 @@ void setup() {
 
 
     connector.setMotorMoveCallback([](MotorMoveQuery query) {
-      Serial.println("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
+      Logging::debug("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
       if (query.x_axis)
         motorX.moveTo(query.position);
       else
@@ -69,7 +70,7 @@ void setup() {
     });
 
     connector.setReductorCallback([](ReductorQuery query) {
-      // Serial.println("Query reduct number " + String(query.reductor_number) + " NextPercentage: " + String(query.open_percentage));
+      // Logging::debug("Query reduct number " + String(query.reductor_number) + " NextPercentage: " + String(query.open_percentage));
 
       switch (query.reductor_number) {
         case 1:

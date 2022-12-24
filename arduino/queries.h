@@ -1,7 +1,7 @@
 #ifndef QUERIES_H
 #define QUERIES_H
 
-//#include <shared_ptr>
+#include "logging.h"
 #include <memory>
 #include <vector>
 
@@ -35,12 +35,12 @@ std::shared_ptr<int> toInt(String str) {
 
 std::shared_ptr<unsigned int> toUInt(String str) {
   auto result = toInt(str);
-  Serial.println("is opt?");
+  Logging::debug("is opt?");
   if (result == nullptr) {
-    Serial.println("opt");
+    Logging::debug("opt");
     return nullptr; 
   }
-  Serial.println("value = " + String(*result));
+  Logging::debug("value = " + String(*result));
   if (result.get() < 0)
     return nullptr; 
 
@@ -110,39 +110,39 @@ struct MotorMoveQuery : public BaseQuery {
   bool x_axis;
 
   static std::shared_ptr<MotorMoveQuery> isMotorMoveQuery(RawQuery queries) {
-    Serial.println("Start checking is motor move query");
+    Logging::debug("Start checking is motor move query");
     
     if (queries.size() != 4) {
-      Serial.println("Size not two: " + String(queries.size()));
+      Logging::debug("Size not two: " + String(queries.size()));
       for (int i = 0; i < queries.size(); i++) {
-        Serial.println("Queries[" + String(i) + "] = '" + queries[i] + "'");
+        Logging::debug("Queries[" + String(i) + "] = '" + queries[i] + "'");
       }
       return nullptr;
     }
 
     auto id = toUInt(queries[0]);
     if (id == nullptr) {
-      Serial.println("Third param: " + queries[2]);
+      Logging::debug("Third param: " + queries[2]);
       return nullptr;
     }
 
     if (queries[1] != "motor-move") {
-      Serial.println("First param no motor-move: " + queries[0]);
+      Logging::debug("First param no motor-move: " + queries[0]);
       return nullptr;
     }
 
     if (queries[2] != "x" && queries[2] != "y") {
-      Serial.println("Second param: '" + queries[2] + "'");
+      Logging::debug("Second param: '" + queries[2] + "'");
       return nullptr;
     }
     
     auto position = toFloat(queries[3]);
     if (position == nullptr) {
-      Serial.println("Third param: " + queries[2]);
+      Logging::debug("Third param: " + queries[2]);
       return nullptr;
     }
 
-    Serial.println("It is motor move query");
+    Logging::debug("It is motor move query");
 
     MotorMoveQuery result;
     result.valid = true;
@@ -159,38 +159,38 @@ struct ReductorQuery : public BaseQuery {
 
   static std::shared_ptr<ReductorQuery> isReductorQuery(RawQuery queries) {
     if (queries.size() != 4) {
-      Serial.println("Size not two: " + String(queries.size()));
+      Logging::debug("Size not two: " + String(queries.size()));
       for (int i = 0; i < queries.size(); i++) {
-        Serial.println("Queries[" + String(i) + "] = '" + queries[i] + "'");
+        Logging::debug("Queries[" + String(i) + "] = '" + queries[i] + "'");
       }
       return nullptr;
     }
 
     auto id = toUInt(queries[0]);
     if (id == nullptr) {
-      // Serial.println("Third param: " + queries[2]);
+      // Logging::debug("Third param: " + queries[2]);
       return nullptr;
     }
 
     if (queries[1] != "reductor") {
-      // Serial.println("First param not reductor: " + queries[1]);
+      // Logging::debug("First param not reductor: " + queries[1]);
       // return nullptr;
     }
 
     auto number = toInt(queries[2]);
     if (number == nullptr) {
-      // Serial.println("Second param: '" + queries[1] + "'");
+      // Logging::debug("Second param: '" + queries[1] + "'");
       return nullptr;
     }
     
     auto percentage = toFloat(queries[3]);
     if (percentage == nullptr) {
-      // Serial.println("Third param: " + queries[2]);
+      // Logging::debug("Third param: " + queries[2]);
       return nullptr;
     }
 
-    // Serial.println("params: " + queries[0] + " " + queries[1] + " " + queries[2]);
-    // Serial.println("decoded: " + queries[0] + " " + String(number.get()) + " " + String(percentage.get()));
+    // Logging::debug("params: " + queries[0] + " " + queries[1] + " " + queries[2]);
+    // Logging::debug("decoded: " + queries[0] + " " + String(number.get()) + " " + String(percentage.get()));
 
     ReductorQuery result;
     result.valid = true;

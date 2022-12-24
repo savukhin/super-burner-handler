@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "logging.h"
 // #include <optional>
 #include <memory>
 
@@ -17,14 +18,14 @@ private:
     bool doQuery(RawQuery query) {
       auto motorMove = MotorMoveQuery::isMotorMoveQuery(query);
       if (motorMove != nullptr) {
-        // Serial.println("Motor move query");
+        // Logging::debug("Motor move query");
         this->moveMotorCallback(*motorMove);
         return true;
       }
 
       auto reductor = ReductorQuery::isReductorQuery(query); 
       if (reductor != nullptr) {
-        // Serial.println("Reductor query");
+        // Logging::debug("Reductor query");
         this->reductorCallback(*reductor);
         return true;
       }
@@ -40,7 +41,7 @@ private:
       content.trim();
 
       // Serial.print("content is ");
-      // Serial.println(content);
+      // Logging::debug(content);
 
       auto query = parseQuery(content);
       doQuery(query);

@@ -1,5 +1,7 @@
 #ifndef REDUCTOR_MOTOR_H
 #define REDUCTOR_MOTOR_H
+
+#include "logging.h"
 #include "motor.h"
 
 class ReductorMotor : public Motor {
@@ -14,7 +16,7 @@ public:
       digitalWrite(15, HIGH);
       delayMicroseconds(50);
       digitalWrite(15, LOW);
-      // Serial.println("Wrote");
+      // Logging::debug("Wrote");
       }
     // moveLength(percentage);
   }

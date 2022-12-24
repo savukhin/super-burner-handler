@@ -1,5 +1,7 @@
 #ifndef MOTOR_H
 #define MOTOR_H
+
+#include "logging.h"
 #include <math.h>
 
 class Motor {
@@ -50,7 +52,7 @@ public:
     delayMicroseconds(pd);
     digitalWrite(this->pinPull, LOW);
     delayMicroseconds(pd);
-    // Serial.println(pd);
+    // Logging::debug(pd);
   }
 
   void rotate(float degrees) {
