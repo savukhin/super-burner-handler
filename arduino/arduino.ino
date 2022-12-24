@@ -33,7 +33,7 @@
 Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
 Motor motorX(800, 19, 0.1);
-Motor motorY(200);
+Motor motorY(200, 4.1);
 
 ReductorMotor motorReductor1(200);
 ReductorMotor motorReductor2(200);
