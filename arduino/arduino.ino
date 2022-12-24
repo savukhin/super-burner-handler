@@ -36,8 +36,8 @@ const float MAX_Y_MM = 260;
 
 Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
-Motor motorX(200, 19, true, 0.1);
-Motor motorY(200, 0.41, true);
+Motor motorX(200, 19, true, 0.05);
+Motor motorY(200, 0.41, true, 0.6);
 // Motor motorY(200, 4.1);
 
 ReductorMotor motorReductor1(200);
