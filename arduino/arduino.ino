@@ -8,19 +8,20 @@
 #include "reductorMotor.h"
 #include "queries.h"
 
-#define D0 16
-#define D1 5
-#define D2 4
-#define D3 0
-#define D4 2
-#define D5 14  
-#define D6 12
-#define D7 13
-#define D8 15
+// #define D0 16
+// #define D1 5
+// #define D2 4
+// #define D3 0
+// #define D4 2
+// #define D5 14  
+// #define D6 12
+// #define D7 13
+// #define D8 15
+#define D15 15
+#define D2 2
+#define D14 14
+#define D27 27
 
-int httpPort = 80;
-std::string ssid = "WS_Lab7";
-std::string password = "ws2020ws";
 
 Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
@@ -43,7 +44,7 @@ void sendCharts() {
 
 void setup() {
     // sensors.setup()
-    connector.setup(httpPort, ssid, password);
+    connector.setup();
 
     // sensorsThread.onRun(sendCharts);
     // sensorsThread.setInterval(1000);
@@ -52,8 +53,8 @@ void setup() {
 
     // motorX.setup(D8, D2);
     // motorY.setup(5, 0);
-    motorX.setup(D1, D3);
-    motorY.setup(D8, D2);
+    motorX.setup(D15, D2);
+    motorY.setup(D14, D27);
     // motorReductor1.setup(D8, D2);
     // motorReductor2.setup(5, 0);
 

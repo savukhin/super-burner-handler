@@ -1,12 +1,13 @@
 #ifndef QUERIES_H
 #define QUERIES_H
 
-#include <optional>
+//#include <shared_ptr>
+#include <memory>
 #include <vector>
 
 using RawQuery = std::vector<String>;
 
-std::optional<int> toInt(String str) {
+std::shared_ptr<int> toInt(String str) {
   if (str.length() == 0)
     return 0;
 
@@ -18,7 +19,7 @@ std::optional<int> toInt(String str) {
 
   for (int i = (wasMinus? 1 : 0); i < str.length(); i++) {
     if (str[i] > '9' || str[i] < '0') {
-      return std::nullopt;
+      return nullptr;
     }
 
     int num = str[i] - '0';
@@ -29,24 +30,24 @@ std::optional<int> toInt(String str) {
   if (wasMinus)
     result = -result;
     
-  return result;
+  return std::make_shared<int>(result);
 }
 
-std::optional<unsigned int> toUInt(String str) {
+std::shared_ptr<unsigned int> toUInt(String str) {
   auto result = toInt(str);
   Serial.println("is opt?");
-  if (result == std::nullopt) {
+  if (result == nullptr) {
     Serial.println("opt");
-    return std::nullopt; 
+    return nullptr; 
   }
-  Serial.println("value = " + String(result.value()));
-  if (result.value() < 0)
-    return std::nullopt; 
+  Serial.println("value = " + String(*result));
+  if (result.get() < 0)
+    return nullptr; 
 
-  return result.value();
+  return std::make_shared<unsigned int>(*result);
 }
 
-std::optional<float> toFloat(String str) {
+std::shared_ptr<float> toFloat(String str) {
   if (str.length() == 0)
     return 0;
 
@@ -60,7 +61,7 @@ std::optional<float> toFloat(String str) {
 
   for (int i = (wasMinus? 1 : 0); i < str.length(); i++) {
     if (str[i] == '.' && wasDot) {
-      return std::nullopt;
+      return nullptr;
     }
 
     if (str[i] == '.' && !wasDot) {
@@ -69,7 +70,7 @@ std::optional<float> toFloat(String str) {
     }
 
     if (str[i] > '9' || str[i] < '0') {
-      return std::nullopt;
+      return nullptr;
     }
 
     int num = str[i] - '0';
@@ -86,7 +87,7 @@ std::optional<float> toFloat(String str) {
   if (wasMinus)
     result = -result;
 
-  return result;
+  return std::make_shared<float>(result);
 }
 
 String toString(char *data) {
@@ -103,11 +104,12 @@ struct BaseQuery {
   unsigned int id = 0;
 };
 
+// 5 motor-move x 10
 struct MotorMoveQuery : public BaseQuery {
   float position; // in mm
   bool x_axis;
 
-  static std::optional<MotorMoveQuery> isMotorMoveQuery(RawQuery queries) {
+  static std::shared_ptr<MotorMoveQuery> isMotorMoveQuery(RawQuery queries) {
     Serial.println("Start checking is motor move query");
     
     if (queries.size() != 4) {
@@ -115,37 +117,39 @@ struct MotorMoveQuery : public BaseQuery {
       for (int i = 0; i < queries.size(); i++) {
         Serial.println("Queries[" + String(i) + "] = '" + queries[i] + "'");
       }
-      return std::nullopt;
+      return nullptr;
     }
 
     auto id = toUInt(queries[0]);
-    if (id == std::nullopt) {
+    if (id == nullptr) {
       Serial.println("Third param: " + queries[2]);
-      return std::nullopt;
+      return nullptr;
     }
 
     if (queries[1] != "motor-move") {
       Serial.println("First param no motor-move: " + queries[0]);
-      return std::nullopt;
+      return nullptr;
     }
 
     if (queries[2] != "x" && queries[2] != "y") {
       Serial.println("Second param: '" + queries[2] + "'");
-      return std::nullopt;
+      return nullptr;
     }
     
     auto position = toFloat(queries[3]);
-    if (position == std::nullopt) {
-      // Serial.println("Third param: " + queries[2]);
-      return std::nullopt;
+    if (position == nullptr) {
+      Serial.println("Third param: " + queries[2]);
+      return nullptr;
     }
+
+    Serial.println("It is motor move query");
 
     MotorMoveQuery result;
     result.valid = true;
-    result.id = id.value();
+    result.id = *id;
     result.x_axis = (queries[2][0] == 'x');
-    result.position = position.value();
-    return result;
+    result.position = *position;
+    return std::make_shared<MotorMoveQuery>(result);
   }
 };
 
@@ -153,47 +157,47 @@ struct ReductorQuery : public BaseQuery {
   float open_percentage; // in percents [0; 100]
   int reductor_number;
 
-  static std::optional<ReductorQuery> isReductorQuery(RawQuery queries) {
+  static std::shared_ptr<ReductorQuery> isReductorQuery(RawQuery queries) {
     if (queries.size() != 4) {
       Serial.println("Size not two: " + String(queries.size()));
       for (int i = 0; i < queries.size(); i++) {
         Serial.println("Queries[" + String(i) + "] = '" + queries[i] + "'");
       }
-      return std::nullopt;
+      return nullptr;
     }
 
     auto id = toUInt(queries[0]);
-    if (id == std::nullopt) {
+    if (id == nullptr) {
       // Serial.println("Third param: " + queries[2]);
-      return std::nullopt;
+      return nullptr;
     }
 
     if (queries[1] != "reductor") {
       // Serial.println("First param not reductor: " + queries[1]);
-      // return std::nullopt;
+      // return nullptr;
     }
 
     auto number = toInt(queries[2]);
-    if (number == std::nullopt) {
+    if (number == nullptr) {
       // Serial.println("Second param: '" + queries[1] + "'");
-      return std::nullopt;
+      return nullptr;
     }
     
     auto percentage = toFloat(queries[3]);
-    if (percentage == std::nullopt) {
+    if (percentage == nullptr) {
       // Serial.println("Third param: " + queries[2]);
-      return std::nullopt;
+      return nullptr;
     }
 
     // Serial.println("params: " + queries[0] + " " + queries[1] + " " + queries[2]);
-    // Serial.println("decoded: " + queries[0] + " " + String(number.value()) + " " + String(percentage.value()));
+    // Serial.println("decoded: " + queries[0] + " " + String(number.get()) + " " + String(percentage.get()));
 
     ReductorQuery result;
     result.valid = true;
-    result.id = id.value();
-    result.reductor_number = number.value();
-    result.open_percentage = percentage.value();
-    return result;
+    result.id = *id;
+    result.reductor_number = *number;
+    result.open_percentage = *percentage;
+    return std::make_shared<ReductorQuery>(result);
   }
 };
 
