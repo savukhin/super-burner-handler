@@ -18,15 +18,21 @@
 // #define D6 12
 // #define D7 13
 // #define D8 15
+#define D23 23
+#define D22 22
+#define D21 21
+
 #define D15 15
 #define D2 2
+#define D4 4
+
 #define D14 14
 #define D27 27
-
+#define D26 26
 
 Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
-Motor motorX(200);
+Motor motorX(800, 19, 0.1);
 Motor motorY(200);
 
 ReductorMotor motorReductor1(200);
@@ -54,8 +60,9 @@ void setup() {
 
     // motorX.setup(D8, D2);
     // motorY.setup(5, 0);
-    motorX.setup(D15, D2);
-    motorY.setup(D14, D27);
+    motorX.setup(D21, D22, D23);
+    // motorX.setup(D15, D2, D4);
+    motorY.setup(D14, D27, D26);
     // motorReductor1.setup(D8, D2);
     // motorReductor2.setup(5, 0);
 

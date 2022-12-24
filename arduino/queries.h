@@ -203,6 +203,7 @@ struct ReductorQuery : public BaseQuery {
 
 
 RawQuery parseQuery(String query) {
+  Logging::debug("Parsing " + query);
   RawQuery result;
   char *str = new char[query.length() + 1];
   strcpy(str, query.c_str());
