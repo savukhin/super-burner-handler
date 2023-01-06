@@ -1,7 +1,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-#define DEBUG
+// #define DEBUG
 
 class Logging {
 public:
