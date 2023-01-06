@@ -6,13 +6,13 @@ void setup() {
 }
 
 void loop() {
-  Vacross = analogRead(A0);
+  // Vacross = analogRead(A0);
    
-  Vacross = (Vacross * 5.0) / 1023.0;
-  Iamp = (Vacross * 1000) / Shunt_Res;
+  // Vacross = (Vacross * 5.0) / 1023.0;
+  // Iamp = (Vacross * 1000) / Shunt_Res;
   
   Serial.print("Current = ");
-  Serial.print(Iamp);
+  // Serial.print(Iamp);
   Serial.println("mA");
   delay(1000);
 }
