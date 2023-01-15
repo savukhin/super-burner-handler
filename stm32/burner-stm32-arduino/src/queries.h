@@ -104,15 +104,16 @@ struct BaseQuery {
   unsigned int id = 0;
 };
 
-// 5 motor-move x 10
+// 5 motor-move x 100 1000
 struct MotorMoveQuery : public BaseQuery {
   float position; // in mm
   bool x_axis;
+  float speed_mm_per_min = 10;
 
   static std::shared_ptr<MotorMoveQuery> isMotorMoveQuery(RawQuery queries) {
     Logging::debug("Start checking is motor move query");
     
-    if (queries.size() != 4) {
+    if (queries.size() != 4 && queries.size() != 5) {
       Logging::debug("Size not two: " + String(queries.size()));
       for (int i = 0; i < queries.size(); i++) {
         Logging::debug("Queries[" + String(i) + "] = '" + queries[i] + "'");
@@ -142,6 +143,11 @@ struct MotorMoveQuery : public BaseQuery {
       return nullptr;
     }
 
+    auto speed = toFloat(queries[4]);
+    if (speed != nullptr) {
+      Logging::debug("Speed: " + String(*speed));
+    }
+
     Logging::debug("It is motor move query");
 
     MotorMoveQuery result;
@@ -149,6 +155,11 @@ struct MotorMoveQuery : public BaseQuery {
     result.id = *id;
     result.x_axis = (queries[2][0] == 'x');
     result.position = *position;
+    if (speed != nullptr)
+      result.speed_mm_per_min = *speed;
+    else
+      result.speed_mm_per_min = -1;
+
     return std::make_shared<MotorMoveQuery>(result);
   }
 };

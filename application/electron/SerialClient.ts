@@ -88,7 +88,7 @@ export class SerialClient {
         return this.answers.get(id)
     }
 
-    async SendMoveHandler(event: Electron.IpcMainInvokeEvent, length: number, axis: "x" | "y") {
+    async SendMoveHandler(event: Electron.IpcMainInvokeEvent, length: number, axis: "x" | "y", speed?: number) {
         console.log(`received request serial = ${this.serial}`);
         if (this.serial == undefined)
             return
@@ -99,8 +99,11 @@ export class SerialClient {
         console.log(axis, length);
         const id = this.generateId()
         let request = `${id} motor-move ${axis.toString()} ${length.toString()}\n`
+
+        if (speed != undefined) {
+            request = `${id} motor-move ${axis.toString()} ${length.toString()} ${speed.toString()}\n`
+        }
         console.log(`request is '${request}'`);
-        
 
         // this.serial.write(Buffer.from(request), function(err) {
         this.serial.write(request, function(err) {
@@ -117,6 +120,7 @@ export class SerialClient {
             return response_from_serial
 
         const json = JSON.parse(response_from_serial) as { final_position: string }
+        
         return json.final_position
     }
 

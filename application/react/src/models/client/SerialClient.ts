@@ -17,10 +17,10 @@ export class SerialClient extends BaseClient {
         return []
     }
 
-    async Move(length: number, axis: "x" | "y") {
-        console.log(length);
+    async Move(length: number, axis: "x" | "y", speed?: number): Promise<number> {
+        console.log(length, speed);
         
-        return await ipcRenderer.invoke("send-move", length, axis) as number
+        return await ipcRenderer.invoke("send-move", length, axis, speed) as number
     }
 
     Calibrate() {

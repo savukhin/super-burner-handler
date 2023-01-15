@@ -43,8 +43,8 @@ app.setUserTasks([])
 app.on('ready', async () => {
   ipcMain.handle("get-coms", SerialClient.handleGetCOMs)
 
-  ipcMain.handle("send-move",  (event, length, axis) => {
-    return serialClient.SendMoveHandler(event, length, axis)
+  ipcMain.handle("send-move",  (event, length: number, axis: "x" | "y", speed?: number) => {
+    return serialClient.SendMoveHandler(event, length, axis, speed)
   })
  
   ipcMain.handle("chose-com", (event, portName) => { 

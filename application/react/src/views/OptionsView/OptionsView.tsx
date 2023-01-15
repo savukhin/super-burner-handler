@@ -48,6 +48,10 @@ export function OptionsView(props: OptionsViewProps) {
     const [ XPosition, setXPosition ] = useState(0)
     const [ stepRange, setStepRange] = useState(0)
     const [ currentSpeed, setCurrentSpeed] = useState(0)
+    const [ speedXFeed, setSpeedXFeed] = useState(5000)
+    const [ speedYFeed, setSpeedYFeed] = useState(800)
+    const [ speedXRapid, setSpeedXRapid] = useState(10000)
+    const [ speedYRapid, setSpeedYRapid] = useState(1600)
     const [ currentPosition, setCurrentPosition ] = useState<IPosition>({x: 0, y: 0})
     const [ blockedButtons, setBlockedButtons ] = useState(false)
 
@@ -71,7 +75,7 @@ export function OptionsView(props: OptionsViewProps) {
         setCOMs(coms)
     }
 
-    async function sendMotorMove(position: number, axis: "x" | "y") {
+    async function sendMotorMove(position: number, axis: "x" | "y", speed?: number) {
         console.log("sended value", position);
         
         if (axis == "x")
@@ -80,7 +84,7 @@ export function OptionsView(props: OptionsViewProps) {
             setYMoving(true)
 
         // await new Promise(async () => {
-            const response = await props.client.Move(position, axis)
+            const response = await props.client.Move(position, axis, speed)
             console.log(response);
             
             if (axis == "x") {
@@ -116,27 +120,27 @@ export function OptionsView(props: OptionsViewProps) {
         setExperimentState(Object.create(experimentState))
 
         const MAX_Y = 190;
-        await sendMotorMove(0, "y")
-        await sendMotorMove(0, "x")
+        await sendMotorMove(0, "y", speedYRapid)
+        await sendMotorMove(0, "x", speedXRapid)
 
-        await sendMotorMove(experimentState.positions.x1_end, "x")
-        await sendMotorMove(experimentState.positions.y_start, "y")
+        await sendMotorMove(experimentState.positions.x1_end, "x", speedXRapid)
+        await sendMotorMove(experimentState.positions.y_start, "y", speedYRapid)
         await setTimeout(() => {}, 1000)
 
-        await sendMotorMove(MAX_Y, "y")
+        await sendMotorMove(MAX_Y, "y", speedYFeed)
         await setTimeout(() => {}, 500)
 
-        await sendMotorMove(experimentState.positions.y_start, "y")
+        await sendMotorMove(experimentState.positions.y_start, "y", speedYFeed)
         await setTimeout(() => {}, 500)
-        await sendMotorMove(experimentState.positions.x2_end, "x")
+        await sendMotorMove(experimentState.positions.x2_end, "x", speedXRapid)
 
         await setTimeout(() => {}, 500)
-        await sendMotorMove(MAX_Y, "y")
+        await sendMotorMove(MAX_Y, "y", speedYFeed)
         await setTimeout(() => {}, 500)
-        await sendMotorMove(experimentState.positions.y_start, "y")
+        await sendMotorMove(experimentState.positions.y_start, "y", speedYFeed)
         
-        await sendMotorMove(0, "y")
-        await sendMotorMove(0, "x")
+        await sendMotorMove(0, "y", speedYRapid)
+        await sendMotorMove(0, "x", speedXRapid)
 
         console.log("Ended");
         
@@ -204,23 +208,23 @@ export function OptionsView(props: OptionsViewProps) {
         
         switch (direction) {
             case "up":
-                position = await sendMotorMove(currentPosition.y + step, "y")
+                position = await sendMotorMove(currentPosition.y + step, "y", speedYFeed)
                 // currentPosition.y += step
                 currentPosition.y = position
                 break;
             case "down":
-                position = await sendMotorMove(currentPosition.y - step, "y")
+                position = await sendMotorMove(currentPosition.y - step, "y", speedYFeed)
                 // currentPosition.y -= step
                 currentPosition.y = position
                 break;
 
             case "right":
-                position = await sendMotorMove(currentPosition.x - step, "x")
+                position = await sendMotorMove(currentPosition.x - step, "x", speedXFeed)
                 // currentPosition.x += step
                 currentPosition.x = position
                 break;
             case "left":
-                position = await sendMotorMove(currentPosition.x + step, "x")
+                position = await sendMotorMove(currentPosition.x + step, "x", speedXFeed)
                 // currentPosition.x -= step
                 currentPosition.x = position
                 break;
@@ -291,6 +295,16 @@ export function OptionsView(props: OptionsViewProps) {
 
     }
 
+    function onChangeNumericInput(event: React.ChangeEvent<HTMLInputElement>, setter: (value: number) => void) {
+        const value = +event.target.value
+        if (isNaN(value)) {
+            showErrorAlert("Value must be number!")
+            return
+        }
+
+        setter(value)
+    }
+
     function generateControls() {
         return (
             <div className="controls-wrapper">
@@ -342,11 +356,26 @@ export function OptionsView(props: OptionsViewProps) {
                     </div>
                 </fieldset>
                 <fieldset className="run-fieldset">
-                    {/* <div className="labeled-parameter">
-                        <span>Speed</span>
-                        <input type="text" disabled={ experimentState.Started } placeholder="Speed" value={ currentSpeed } onChange={ onChangeSpeed }></input>
-                        <span>mm/s</span>
-                    </div> */}
+                    <div className="labeled-parameter">
+                        <span>Speed X Feed</span>
+                        <input type="text" disabled={ experimentState.Started } placeholder="Feed Speed X" value={ speedXFeed } onChange={ (event) => { onChangeNumericInput(event, setSpeedXFeed) } }></input>
+                        <div className="fraction"><span>mm</span><span>min</span></div>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>Speed Y Feed</span>
+                        <input type="text" disabled={ experimentState.Started } placeholder="Feed Speed Y" value={ speedYFeed } onChange={ (event) => { onChangeNumericInput(event, setSpeedYFeed) } }></input>
+                        <div className="fraction"><span>mm</span><span>min</span></div>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>Speed X Rapid</span>
+                        <input type="text" disabled={ experimentState.Started } placeholder="Rapid Speed X" value={ speedXRapid } onChange={ (event) => { onChangeNumericInput(event, setSpeedXRapid) } }></input>
+                        <div className="fraction"><span>mm</span><span>min</span></div>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>Speed Y Rapid</span>
+                        <input type="text" disabled={ experimentState.Started } placeholder="Rapid Speed Y" value={ speedYRapid } onChange={ (event) => { onChangeNumericInput(event, setSpeedYRapid) } }></input>
+                        <div className="fraction"><span>mm</span><span>min</span></div>
+                    </div>
                     <button disabled={ !experimentState.IsReadyToStart() } className="btn" onClick={ startExperiment }>Start experiment</button>
                     {/* <button disabled={ !experimentState.Started } className="btn btn-warning" onClick={ forceStopExperiment }>Stop</button> */}
                 </fieldset>

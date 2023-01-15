@@ -1,8 +1,10 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+// #define __BSD_VISIBLE
 #include "logging.h"
 #include <math.h>
+#include <Arduino.h>
 
 class Motor {
 private:
@@ -18,14 +20,18 @@ private:
   float speedMultiplier;
   bool invertDIR;
 
-  int getPulseDelay() {
+  int getPulseDelay(float rev_min=-1) {
+    if (rev_min == -1)
+      rev_min = this->rev_min * this->speedMultiplier;
+
     int pulse_min = pulse_rev * rev_min;
     // float time_pulse_min = 1. / pulse_min;
     // float time_pulse_mcs = time_pulse_min * 60. * 1000. * 1000.;
 
     float time_pulse_mcs = (60. * 1000. * 1000.) / pulse_min;
 
-    return time_pulse_mcs / (2 * this->speedMultiplier);
+    return time_pulse_mcs / (2);
+    // return time_pulse_mcs / (2 * this->speedMultiplier);
   }
 
 
@@ -58,8 +64,8 @@ public:
     digitalWrite(this->pinEna, HIGH);
   }
 
-  void step(float pulse_rev=200) {
-    int pd = this->getPulseDelay();
+  void step(float rev_min=-1) {
+    int pd = this->getPulseDelay(rev_min);
 
     digitalWrite(this->pinPull, HIGH);
     delayMicroseconds(pd);
@@ -80,7 +86,7 @@ public:
     this->position = 0;
   }
 
-  void makeSteps(float steps) {
+  void makeSteps(float steps, float rev_min=-1) {
     boolean dir = HIGH;
     if (steps < 0)
       dir = LOW;
@@ -91,8 +97,7 @@ public:
       else
         dir = HIGH;
     }
-    Logging::debug("dir = " + String(dir));
-    Logging::debug("steps = " + String(steps));
+    Logging::debug("makeSteps rev_min = " + String(rev_min));
 
     digitalWrite(this->pinDir, dir);
 
@@ -104,7 +109,7 @@ public:
     }
 
     for (int i = 0; i < final_steps; i++) {
-      this->step();
+      this->step(rev_min);
     }
 
     this->restart();
@@ -121,16 +126,20 @@ public:
     makeSteps(steps);
   }
 
-  void moveLength(float lenght) {
+  void moveLength(float lenght, float speed_mm_per_min=-1) {
     float degrees = lenght / this->valveLenghtPerDegree;
     // this->rotate(degrees);
 
     float steps = this->pulse_rev * (lenght / this->valveLenghtMM);
-    makeSteps(steps);
+
+    float rev_min = speed_mm_per_min / this->valveLenghtMM;
+    if (speed_mm_per_min == -1)
+      rev_min = -1;
+    makeSteps(steps, rev_min);
   }
 
-  void moveTo(float position) {
-    this->moveLength(position - this->position);
+  void moveTo(float position, float speed_mm_per_min=-1) {
+    this->moveLength(position - this->position, speed_mm_per_min);
     this->position = position;
   }
 };

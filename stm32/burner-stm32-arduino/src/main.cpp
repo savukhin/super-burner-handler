@@ -72,16 +72,16 @@ void setup() {
     // motorReductor2.setup(5, 0);
 
     connector.setMotorMoveCallback([](MotorMoveQuery query) {
-      Logging::debug("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position));
+      Logging::debug("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position) + " Speed: " + String(query.speed_mm_per_min));
       // float final_position = query.position + (query.x_axis ? motorX.getPosition() : motorY.getPosition());
       float final_position = max(0.f, query.position);
 
       if (query.x_axis) {
         final_position = min(MAX_X_MM, final_position);
-        motorX.moveTo(final_position);
+        motorX.moveTo(final_position, query.speed_mm_per_min);
       } else {
         final_position = min(MAX_Y_MM, final_position);
-        motorY.moveTo(final_position);
+        motorY.moveTo(final_position, query.speed_mm_per_min);
       }
     
       connector.sendResponse(query.id, "{ \"final_position\": " + String(final_position) + " }");
