@@ -52,6 +52,7 @@ app.on('ready', async () => {
   })
 
   ipcMain.handle("calibrate",  (event) => {
+    return "ok"
     return serialClient.SendCalibrateHandler(event)
   })
 

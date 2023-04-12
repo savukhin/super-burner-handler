@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <target.hpp>
+
 #include <string>
 #include <vector>
 // #include <Thread.h>
@@ -33,13 +35,17 @@
 #define D27 27
 #define D26 26
 
-const float MAX_X_MM = 200;
-const float MAX_Y_MM = 260;
+const float MAX_X_MM = 280;
+const float MAX_Y_MM = 200;
 
 Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
-Motor motorX(200, 19, true, 0.05);
-Motor motorY(200, 0.41, true, 0.6);
+Motor motorX(200, 0.3184, true, 0.4);
+// Motor motorX(200, 0.41, false, 0.4);
+Motor motorY(200, 9.77, true, 1);
+// Motor motorY(200, 0.525, true, 0.05);
+// Motor motorY(200, 19, true, 0.05);
+// Motor motorY(200, 0.41, true, 0.6);
 // Motor motorY(200, 4.1);
 
 ReductorMotor motorReductor1(200);
@@ -49,7 +55,7 @@ void sendCharts() {
     while (true) {
         auto charts = sensors.getCharts();
         connector.send(charts);
-        delay(3000);
+        delay(3000); 
     }
 }
 
@@ -62,17 +68,11 @@ void setup() {
     // sensorsThread.setInterval(1000);
     // stepper.setSpeed(30);
     
-
-    // motorX.setup(D8, D2);
-    // motorY.setup(5, 0);
-    motorX.setup(PB9, PB8, PB7);
-    // motorX.setup(D15, D2, D4);
-    motorY.setup(PB14, PB13, PB12);
-    // motorReductor1.setup(D8, D2);
-    // motorReductor2.setup(5, 0);
+    motorX.setup(MOTOR_X_PULL, MOTOR_X_DIR, MOTOR_X_ENA);
+    motorY.setup(MOTOR_Y_PULL, MOTOR_Y_DIR, MOTOR_Y_ENA);
 
     connector.setMotorMoveCallback([](MotorMoveQuery query) {
-      Logging::debug("Query motor move x-axis " + String(query.x_axis ? "True" : "False") + " NextPosition: " + String(query.position) + " Speed: " + String(query.speed_mm_per_min));
+      Logging::debug("Query motor move " + String(query.x_axis ? "x-axis" : "y-axis") + " NextPosition: " + String(query.position) + " Speed: " + String(query.speed_mm_per_min));
       // float final_position = query.position + (query.x_axis ? motorX.getPosition() : motorY.getPosition());
       float final_position = max(0.f, query.position);
 
