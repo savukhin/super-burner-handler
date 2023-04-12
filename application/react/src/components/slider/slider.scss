@@ -1,0 +1,43 @@
+@import '../../scss exports/colors';
+
+.slider-wrapper {
+    display: flex;
+    
+    span {
+        white-space: nowrap;
+        margin-left: 2px;
+        margin-right: 2px;
+    }
+}
+
+input[type='range'] {
+    -webkit-appearance: none ;
+    background: $text-color-light;
+    height:7px;
+    cursor: pointer;
+
+    &:disabled{ 
+        &::-webkit-slider-thumb {
+            background: black;
+        }
+
+        & {
+            background: black;
+            cursor: wait;
+        }
+    }
+    
+}
+
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none ;
+    background: $btn-color;
+    height:15px;
+    width:10px;
+}
+
+input[type='range']:hover {
+    background-color: $bg-color-dark;
+}
+
+

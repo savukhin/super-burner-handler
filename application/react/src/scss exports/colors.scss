@@ -1,0 +1,53 @@
+// $main-color: #EB7F13;
+// $bg-color-light: #EBE1CE;
+// $bg-color-dark:#523703;
+// $block-color: #A36F07;
+// $main-text-color: #574727;
+
+$main-color: #EB7F13;
+$bg-color-light: #70604A;
+$bg-color-light-2: #9d8360;
+$bg-color-dark:#474238;
+$bg-color-dark-2:#272521;
+$block-color: #A36F07;
+$main-text-color: #574727;
+$bg-white: #fffefe;
+
+$text-color-light: #F0FAFF;
+$btn-color: #FF9100;
+$btn-color-hover: #f1ad53;
+
+$text-color: black;
+$warning-color-2: #dd1212;
+
+$bg-color-light: #8C8C8C;
+$bg-color-light-2: #849BFA;
+$bg-color-dark: #2c2f33;
+$bg-color-dark-2: #23272a;
+$text-color: #FBB49E;
+$block-color: #99aab5;
+$warning-color: #c82e2e;
+$absolute-hint-color: #6c6978;
+
+$second-bg-color: #414244;
+$frame-color: #23272a;
+$text-color: #ffffff;
+$block-color: #99aab5;
+$additional-color: #7289da;
+
+:root {
+    --main-color: #{$main-color};
+    --bg-color-light: #{$bg-color-light};
+    --bg-color-light-2: #{$bg-color-light-2};
+    --bg-color-dark: #{$bg-color-dark};
+    --bg-color-dark-2: #{$bg-color-dark-2};
+    --block-color:#{$block-color};
+    --main-text-color: #{$main-text-color};
+    --bg-white: #{$bg-white};
+
+    --text-color-light: #{$text-color-light};
+    --btn-color: #{$btn-color};
+    --btn-color-hover: #{$btn-color-hover};
+
+    --warning-color: #{$warning-color};
+}

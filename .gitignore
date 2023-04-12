@@ -106,3 +106,5 @@ release-builds
 
 # Mac
 .DS_Store
+
+*.zip

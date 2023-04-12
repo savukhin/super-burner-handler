@@ -1,0 +1,80 @@
+@import '../../scss exports/colors';
+
+.chart {
+    position: relative;
+    background-color: $bg-white;
+    border-radius: 4px;
+    padding: 9px;
+    width: 100%;
+    // width: initial;
+    height: 100%;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: 10px auto;
+
+    h3 {
+        margin: 0
+    }
+}
+
+.chart-settings {
+    background-color: white;
+
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+
+    fieldset {
+        min-width: 100px;
+
+        border-radius: 6px;
+
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+    }
+
+    .chart-settings-option {
+        display: flex;
+        align-items: center;
+
+        margin-bottom: 15px;
+
+        label {
+            cursor: pointer;
+            min-width: 40px;
+            // width: 80%;
+        }
+        input {
+            cursor: pointer;
+            flex: 1;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    }
+
+    .chart-settings-option:last-child {
+        margin-bottom: 0;
+    }
+
+    .close {
+        border: 1px solid rgba(0, 0, 0, 0);
+        cursor: pointer;
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        padding: 2px;
+
+        border-radius: 3px;
+        display: flex;
+
+    }
+    
+    .close:hover {
+        border: 1px solid $bg-color-light;
+    }
+}
