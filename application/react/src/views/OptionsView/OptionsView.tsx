@@ -52,6 +52,9 @@ export function OptionsView(props: OptionsViewProps) {
     const [ speedYFeed, setSpeedYFeed] = useState(800)
     const [ speedXRapid, setSpeedXRapid] = useState(10000)
     const [ speedYRapid, setSpeedYRapid] = useState(1600)
+    const [ pyrometerDegs, setPyrometerDegs ] = useState(0)
+    const [ thermoCoupleDegs, setThermoCoupleDegs ] = useState(0)
+    const [ photoResistorDegs, setPhotoResistorDegs ] = useState(0)
     const [ currentPosition, setCurrentPosition ] = useState<IPosition>({x: 0, y: 0})
     const [ blockedButtons, setBlockedButtons ] = useState(false)
 
@@ -378,6 +381,23 @@ export function OptionsView(props: OptionsViewProps) {
                     </div>
                     <button disabled={ !experimentState.IsReadyToStart() } className="btn" onClick={ startExperiment }>Start experiment</button>
                     {/* <button disabled={ !experimentState.Started } className="btn btn-warning" onClick={ forceStopExperiment }>Stop</button> */}
+                </fieldset>
+                <fieldset className="sensors-fieldset">
+                    <div className="labeled-parameter">
+                        <span>Pyrometer</span>
+                        <input type="text" readOnly={ true } value={ pyrometerDegs }></input>
+                        <span>°C</span>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>Thermo Couple</span>
+                        <input type="text" readOnly={ true } value={ thermoCoupleDegs }></input>
+                        <span>°C</span>
+                    </div>
+                    <div className="labeled-parameter">
+                        <span>Photo Resistor</span>
+                        <input type="text" readOnly={ true } value={ photoResistorDegs }></input>
+                        <span>°C</span>
+                    </div>
                 </fieldset>
             </div>
         )

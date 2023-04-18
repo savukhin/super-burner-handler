@@ -10,7 +10,7 @@ export interface IPositions {
 }
 
 export class ExperimentState {
-    COMPrepared: boolean = false
+    COMPrepared: boolean = true
     YAxisPrepared: boolean = false
     YAxisEndPosition: number = 0
     positions: IPositions = { x1_end: 0, x2_end: 0, y_start: 0}
