@@ -4,6 +4,7 @@
 #include "logging.h"
 #include <memory>
 #include <vector>
+// #include <Arduino.h>
 
 using RawQuery = std::vector<String>;
 
