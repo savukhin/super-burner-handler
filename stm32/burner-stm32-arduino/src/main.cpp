@@ -1,4 +1,9 @@
+#if defined(ARDUINO)
 #include <Arduino.h>
+#else
+#include <ArduinoUnit.h>
+#include <ArduinoUnitMock.h>
+#endif
 
 #include <target.hpp>
 
