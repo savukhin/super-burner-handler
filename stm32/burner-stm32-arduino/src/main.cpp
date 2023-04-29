@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 // #include <Thread.h>
-#include <Math.h>
+#include <math.h>
 
 #include "logging.h"
 #include "connector.h"
