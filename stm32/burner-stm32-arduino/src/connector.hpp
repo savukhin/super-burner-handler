@@ -7,13 +7,11 @@
 // #include <optional>
 #include <memory>
 
-#include "chart.hpp"
 #include "queries.hpp"
 
 class Connector {
 private:
     void(*moveMotorCallback)(MotorMoveQuery);
-    void(*reductorCallback)(ReductorQuery);
     void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery);
     void(*setIntVarCallback)(SetIntVarQuery);
     void(*startExperimentCallback)(StartExperimentQuery);
@@ -23,13 +21,6 @@ private:
       if (motorMove != nullptr) {
         Logging::debug("Motor move query");
         this->moveMotorCallback(*motorMove);
-        return true;
-      }
-
-      auto reductor = ReductorQuery::isReductorQuery(query); 
-      if (reductor != nullptr) {
-        Logging::debug("Reductor query");
-        this->reductorCallback(*reductor);
         return true;
       }
 
@@ -81,9 +72,6 @@ public:
     void setMotorMoveCallback(void(*moveMotorCallback)(MotorMoveQuery)) {
       this->moveMotorCallback = moveMotorCallback;
     }
-    void setReductorCallback(void(*reductorCallback)(ReductorQuery)) {
-      this->reductorCallback = reductorCallback;
-    }
     void setCalibrateXYMotorsCallback(void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery)) {
       this->calibrateXYMotorsCallback = calibrateXYMotorsCallback;
     }
@@ -93,10 +81,6 @@ public:
     }
     void setStartExperimentCallback(void(*startExperimentCallback)(StartExperimentQuery)) {
       this->startExperimentCallback = startExperimentCallback;
-    }
-
-    void send(std::vector<Chart> &charts) {
-
     }
 
     void sendResponse(int id, String message) {

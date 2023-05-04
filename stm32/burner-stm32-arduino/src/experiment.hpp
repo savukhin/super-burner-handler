@@ -9,7 +9,7 @@
 #include "sensor.hpp"
 #include "motor.hpp"
 #include "ignitor.hpp"
-#include "timer.hpp"
+#include "resistor.hpp"
 
 /*
    |   (0,0)  ------------------> X-axis        |
@@ -44,6 +44,7 @@ private:
     Motor *motorX; // Target axis
     Motor *motorY; // Ignitor axis
     Ignitor *ignitor;
+    Resistor *photoresistor;
 
     // ----- Experiments variables ----- //
     double YStart;
@@ -53,7 +54,7 @@ private:
     double highSpeed;
     double lowSpeed;
 
-    Timer timer;
+    uint32_t startTime = -1;
 
     std::vector<double> readSensors() {
         std::vector<double> result(sensors.size());
@@ -66,8 +67,13 @@ private:
     }
 
 public:
-    Experiment() = default;
-    Experiment(std::vector<ISensor*> sensors): sensors(sensors) {}
+    Experiment() = delete;
+    Experiment(std::vector<ISensor*> sensors,
+        Motor *motorX, // Target axis
+        Motor *motorY, // Ignitor axis
+        Ignitor *ignitor,
+        Resistor *photoresistor
+    ): sensors(sensors), motorX(motorX), motorY(motorY), ignitor(ignitor), photoresistor(photoresistor) {}
 
     void start() {
         if (!this->motorX || !this->motorY || !this->ignitor) {
@@ -87,19 +93,36 @@ public:
         // Move to the ignitor position
         this->motorY->moveTo(this->YEnd, lowSpeed);
 
-        std::function<void()> func1 = [&]() {
-            this->ignitor->stop();
-        };
+        this->startTime = millis();
 
-        this->timer.setTimeout(func1, 500);
+        this->ignitor->start();
+
+    }
+
+    void interrupt() {
+        started = false;
+
+        this->motorY->moveTo(this->YStart, highSpeed);
+
+        this->ignitor->stop();
     }
 
     std::vector<double> loop() {
         if (!started) {
-            return;
+            return {};
+        }
+
+        if (millis() - this->startTime > 500) {
+            this->ignitor->stop();
+        }
+
+        if (this->photoresistor->getValue() > 200) {
+            interrupt();
         }
 
         std::vector<double> sensor_data = readSensors();
+
+        return sensor_data;
         
     }
 };

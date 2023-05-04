@@ -93,7 +93,7 @@ public:
   }
 
   void makeSteps(float steps, float rev_min=-1) {
-    boolean dir = HIGH;
+    bool dir = HIGH;
     if (steps < 0)
       dir = LOW;
 

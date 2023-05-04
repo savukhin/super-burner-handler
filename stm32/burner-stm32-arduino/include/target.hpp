@@ -1,5 +1,7 @@
 #pragma once
 
+#define NC -1
+
 #if defined(TARGET_BLUEPILL)
     #define MOTOR_Y_PULL       PB14
     #define MOTOR_Y_DIR        PB13

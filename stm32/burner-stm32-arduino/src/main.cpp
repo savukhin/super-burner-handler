@@ -7,7 +7,6 @@
 
 #include <target.hpp>
 #include <string>
-#include <iostream>
 #include <vector>
 // #include <Thread.h>
 #include <math.h>
@@ -15,7 +14,9 @@
 #include "experiment.hpp"
 #include "logging.hpp"
 #include "connector.hpp"
-#include "sensor.hpp"
+#include "pyrometer.hpp"
+#include "resistor.hpp"
+#include "thermocouple.hpp"
 #include "motor.hpp"
 #include "reductorMotor.hpp"
 #include "queries.hpp"
@@ -44,8 +45,9 @@
 const float MAX_X_MM = 280;
 const float MAX_Y_MM = 200;
 
-Sensors sensors(std::vector<uint32_t>{0});
 Connector connector;
+
+// ------- MOTORS ------- //
 Motor motorX(200, 0.3184, true, 0.4);
 // Motor motorX(200, 0.41, false, 0.4);
 Motor motorY(200, 9.77, true, 1);
@@ -56,15 +58,20 @@ Motor motorY(200, 9.77, true, 1);
 
 ReductorMotor motorReductor1(200);
 ReductorMotor motorReductor2(200);
-Experiment experiment;
 
-void sendCharts() {
-    while (true) {
-        auto charts = sensors.getCharts();
-        connector.send(charts);
-        delay(3000); 
-    }
-}
+// ------- SENSORS ------- //
+Thermocouple thermocouple(NC);
+Pyrometer pyrometer(NC);
+Resistor photoresistor(NC);
+
+// ------- OTHERS ------- //
+Ignitor ignitor(NC);
+
+Experiment experiment(
+  {&thermocouple, &pyrometer, &photoresistor},
+  &motorX, &motorY, &ignitor, &photoresistor
+);
+
 
 void setup() {
     // sensors.setup()
@@ -105,20 +112,6 @@ void setup() {
       motorY.refreshZeroPosition();
       Logging::debug("Refreshed positions");
 
-      connector.sendResponse(query.id, "ok");
-    });
-
-    connector.setReductorCallback([](ReductorQuery query) {
-      // Logging::debug("Query reduct number " + String(query.reductor_number) + " NextPercentage: " + String(query.open_percentage));
-
-      switch (query.reductor_number) {
-        case 1:
-          motorReductor1.openPercentage(query.open_percentage);
-          break;
-        case 2:
-          motorReductor2.openPercentage(query.open_percentage);
-          break;
-      }
       connector.sendResponse(query.id, "ok");
     });
 
