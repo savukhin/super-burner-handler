@@ -12,6 +12,7 @@
 // #include <Thread.h>
 #include <math.h>
 
+#include "experiment.hpp"
 #include "logging.hpp"
 #include "connector.hpp"
 #include "sensor.hpp"
@@ -55,6 +56,7 @@ Motor motorY(200, 9.77, true, 1);
 
 ReductorMotor motorReductor1(200);
 ReductorMotor motorReductor2(200);
+Experiment experiment;
 
 void sendCharts() {
     while (true) {
@@ -63,7 +65,6 @@ void sendCharts() {
         delay(3000); 
     }
 }
-
 
 void setup() {
     // sensors.setup()
@@ -120,10 +121,22 @@ void setup() {
       }
       connector.sendResponse(query.id, "ok");
     });
+
+    connector.setSetIntVarCallback([](SetIntVarQuery query) {
+      Logging::debug("Query setInt " + query.variable + " value = " + String(query.value));
+      // float final_position = query.position + (query.x_axis ? motorX.getPosition() : motorY.getPosition());
+      
+    });
+
+    connector.setStartExperimentCallback([](StartExperimentQuery query) {
+      Logging::debug("Query startExperiment");
+      experiment.start();
+    });
 }
 
 void loop() {
     // if (sensorsThread.shouldRun())
     //     sensorsThread.run();
     connector.loop();
+    experiment.loop();
 }

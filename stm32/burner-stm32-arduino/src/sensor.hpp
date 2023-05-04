@@ -1,5 +1,12 @@
+#pragma once
 // #include <vector>
 #include "chart.hpp"
+
+class ISensor {
+public:
+    ISensor() {}
+    virtual double getValue() = 0;
+};
 
 class Sensor {
 private:

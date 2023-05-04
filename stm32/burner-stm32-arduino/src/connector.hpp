@@ -15,26 +15,42 @@ private:
     void(*moveMotorCallback)(MotorMoveQuery);
     void(*reductorCallback)(ReductorQuery);
     void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery);
+    void(*setIntVarCallback)(SetIntVarQuery);
+    void(*startExperimentCallback)(StartExperimentQuery);
 
     bool doQuery(RawQuery query) {
       auto motorMove = MotorMoveQuery::isMotorMoveQuery(query);
       if (motorMove != nullptr) {
-        // Logging::debug("Motor move query");
+        Logging::debug("Motor move query");
         this->moveMotorCallback(*motorMove);
         return true;
       }
 
       auto reductor = ReductorQuery::isReductorQuery(query); 
       if (reductor != nullptr) {
-        // Logging::debug("Reductor query");
+        Logging::debug("Reductor query");
         this->reductorCallback(*reductor);
         return true;
       }
 
       auto calibrate = CalibrateXYMotorsQuery::isCalibrateQuery(query); 
       if (calibrate != nullptr) {
-        // Logging::debug("Calibrate query");
+        Logging::debug("Calibrate query");
         this->calibrateXYMotorsCallback(*calibrate);
+        return true;
+      }
+
+      auto setInt = SetIntVarQuery::isSetIntVarQuery(query); 
+      if (setInt != nullptr) {
+        Logging::debug("SetInt query");
+        this->setIntVarCallback(*setInt);
+        return true;
+      }
+
+      auto start = StartExperimentQuery::isStartExperimentQuery(query); 
+      if (start != nullptr) {
+        Logging::debug("Start experiment query");
+        this->startExperimentCallback(*start);
         return true;
       }
 
@@ -70,6 +86,13 @@ public:
     }
     void setCalibrateXYMotorsCallback(void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery)) {
       this->calibrateXYMotorsCallback = calibrateXYMotorsCallback;
+    }
+    // void(*startExperimentCallback)(StartExperimentQuery);
+    void setSetIntVarCallback(void(*setIntVarCallback)(SetIntVarQuery)) {
+      this->setIntVarCallback = setIntVarCallback;
+    }
+    void setStartExperimentCallback(void(*startExperimentCallback)(StartExperimentQuery)) {
+      this->startExperimentCallback = startExperimentCallback;
     }
 
     void send(std::vector<Chart> &charts) {
