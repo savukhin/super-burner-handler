@@ -1,8 +1,8 @@
 #ifndef REDUCTOR_MOTOR_H
 #define REDUCTOR_MOTOR_H
 
-#include "logging.h"
-#include "motor.h"
+#include "logging.hpp"
+#include "motor.hpp"
 
 class ReductorMotor : public Motor {
 public:

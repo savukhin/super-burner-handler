@@ -2,7 +2,7 @@
 #define MOTOR_H
 
 // #define __BSD_VISIBLE
-#include "logging.h"
+#include "logging.hpp"
 #include <math.h>
 // #if defined(ARDUINO)
 #include <Arduino.h>

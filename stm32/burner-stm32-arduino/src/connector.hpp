@@ -3,12 +3,12 @@
 
 #include <string>
 #include <vector>
-#include "logging.h"
+#include "logging.hpp"
 // #include <optional>
 #include <memory>
 
-#include "chart.h"
-#include "queries.h"
+#include "chart.hpp"
+#include "queries.hpp"
 
 class Connector {
 private:

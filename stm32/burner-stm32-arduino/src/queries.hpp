@@ -1,7 +1,7 @@
 #ifndef QUERIES_H
 #define QUERIES_H
 
-#include "logging.h"
+#include "logging.hpp"
 #include <memory>
 #include <vector>
 // #include <Arduino.h>

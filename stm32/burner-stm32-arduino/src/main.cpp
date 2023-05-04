@@ -6,18 +6,18 @@
 // #endif
 
 #include <target.hpp>
-
 #include <string>
+#include <iostream>
 #include <vector>
 // #include <Thread.h>
 #include <Math.h>
 
-#include "logging.h"
-#include "connector.h"
-#include "sensor.h"
-#include "motor.h"
-#include "reductorMotor.h"
-#include "queries.h"
+#include "logging.hpp"
+#include "connector.hpp"
+#include "sensor.hpp"
+#include "motor.hpp"
+#include "reductorMotor.hpp"
+#include "queries.hpp"
 
 // #define D0 16
 // #define D1 5
