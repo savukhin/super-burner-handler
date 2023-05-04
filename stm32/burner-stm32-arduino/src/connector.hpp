@@ -13,7 +13,7 @@ class Connector {
 private:
     void(*moveMotorCallback)(MotorMoveQuery);
     void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery);
-    void(*setIntVarCallback)(SetIntVarQuery);
+    void(*setFloatVarCallback)(SetFloatVarQuery);
     void(*startExperimentCallback)(StartExperimentQuery);
 
     bool doQuery(RawQuery query) {
@@ -31,10 +31,10 @@ private:
         return true;
       }
 
-      auto setInt = SetIntVarQuery::isSetIntVarQuery(query); 
+      auto setInt = SetFloatVarQuery::isSetFloatVarQuery(query); 
       if (setInt != nullptr) {
         Logging::debug("SetInt query");
-        this->setIntVarCallback(*setInt);
+        this->setFloatVarCallback(*setInt);
         return true;
       }
 
@@ -76,8 +76,8 @@ public:
       this->calibrateXYMotorsCallback = calibrateXYMotorsCallback;
     }
     // void(*startExperimentCallback)(StartExperimentQuery);
-    void setSetIntVarCallback(void(*setIntVarCallback)(SetIntVarQuery)) {
-      this->setIntVarCallback = setIntVarCallback;
+    void setSetFloatVarCallback(void(*setFloatVarCallback)(SetFloatVarQuery)) {
+      this->setFloatVarCallback = setFloatVarCallback;
     }
     void setStartExperimentCallback(void(*startExperimentCallback)(StartExperimentQuery)) {
       this->startExperimentCallback = startExperimentCallback;

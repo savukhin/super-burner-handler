@@ -23,6 +23,14 @@ export class SerialClient extends BaseClient {
         return await ipcRenderer.invoke("send-move", length, axis, speed) as number
     }
 
+    async StartExperiment(): Promise<number> {
+        return await ipcRenderer.invoke("start-experiment")
+    }
+
+    async SetVarFloat(varname: "YStart" | "XStart" | "YEnd" | "XHighSpeed" | "XLowSpeed" | "YHighSpeed" | "YLowSpeed", value: number): Promise<number> {
+        return await ipcRenderer.invoke("setfloat", varname, value)
+    }
+
     Calibrate() {
         return ipcRenderer.invoke("calibrate")
     }

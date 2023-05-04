@@ -38,7 +38,8 @@ function createWindow() {
 
 }
 
-app.setUserTasks([])
+// app.setUserTasks([])
+app.requestSingleInstanceLock()
 
 app.on('ready', async () => {
   ipcMain.handle("get-coms", SerialClient.handleGetCOMs)
@@ -54,6 +55,14 @@ app.on('ready', async () => {
   ipcMain.handle("calibrate",  (event) => {
     return "ok"
     return serialClient.SendCalibrateHandler(event)
+  })
+
+  ipcMain.handle("setfloat",  (event, varname, value) => {
+    return serialClient.SendSetFloatHandler(event, varname, value)
+  })
+
+  ipcMain.handle("start-experiment",  (event) => {
+    return serialClient.SendStartExperimentHandler(event)
   })
 
   ipcMain.handle("show-message-box", (event, msg) => {

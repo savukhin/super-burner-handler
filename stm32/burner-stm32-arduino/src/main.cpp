@@ -1,14 +1,8 @@
-// #if defined(ARDUINO)
 #include <Arduino.h>
-// #else
-// #include <ArduinoUnit.h>
-// #include <ArduinoUnitMock.h>
-// #endif
 
 #include <target.hpp>
 #include <string>
 #include <vector>
-// #include <Thread.h>
 #include <math.h>
 
 #include "experiment.hpp"
@@ -115,15 +109,16 @@ void setup() {
       connector.sendResponse(query.id, "ok");
     });
 
-    connector.setSetIntVarCallback([](SetIntVarQuery query) {
+    connector.setSetFloatVarCallback([](SetFloatVarQuery query) {
       Logging::debug("Query setInt " + query.variable + " value = " + String(query.value));
-      // float final_position = query.position + (query.x_axis ? motorX.getPosition() : motorY.getPosition());
-      
+      bool success = experiment.SetVariable(query.variable, query.value);
+      connector.sendResponse(query.id, (success ? "ok" : "varname not recognized"));
     });
 
     connector.setStartExperimentCallback([](StartExperimentQuery query) {
       Logging::debug("Query startExperiment");
       experiment.start();
+      connector.sendResponse(query.id, "ok");
     });
 }
 

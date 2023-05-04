@@ -276,12 +276,12 @@ struct IgniteQuery : public BaseQuery {
   }
 };
 
-// 1 setint varname 100
-struct SetIntVarQuery : public BaseQuery {
+// 1 setfloat varname 100
+struct SetFloatVarQuery : public BaseQuery {
   String variable = "";
-  int value = 0;
+  float value = 0;
 
-  static std::shared_ptr<SetIntVarQuery> isSetIntVarQuery(RawQuery queries) {
+  static std::shared_ptr<SetFloatVarQuery> isSetFloatVarQuery(RawQuery queries) {
     Logging::debug("Start checking is motor move query");
     
     if (queries.size() != 4) {
@@ -298,23 +298,23 @@ struct SetIntVarQuery : public BaseQuery {
       return nullptr;
     }
 
-    if (queries[1] != "setint") {
-      Logging::debug("Second param not setint: " + queries[1]);
+    if (queries[1] != "setfloat") {
+      Logging::debug("Second param not setfloat: " + queries[1]);
       return nullptr;
     }
 
-    auto value = toInt(queries[3]);
+    auto value = toFloat(queries[3]);
     if (value == nullptr) {
       Logging::debug("Fourth param not int'" + queries[3] + "'");
       return nullptr;
     }
     
-    SetIntVarQuery result;
+    SetFloatVarQuery result;
     result.valid = true;
     result.id = *id;
     result.variable = queries[1];
     result.value = *value;
-    return std::make_shared<SetIntVarQuery>(result);
+    return std::make_shared<SetFloatVarQuery>(result);
   }
 };
 

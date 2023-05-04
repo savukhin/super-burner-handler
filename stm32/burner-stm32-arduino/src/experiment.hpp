@@ -51,8 +51,10 @@ private:
     double XStart;
     double YEnd;
 
-    double highSpeed;
-    double lowSpeed;
+    double XHighSpeed;
+    double XLowSpeed;
+    double YHighSpeed;
+    double YLowSpeed;
 
     uint32_t startTime = -1;
 
@@ -83,15 +85,15 @@ public:
         started = true;
         
         // Move to the null position
-        this->motorX->moveTo(0, highSpeed);
-        this->motorY->moveTo(0, highSpeed);
+        this->motorX->moveTo(0, XHighSpeed);
+        this->motorY->moveTo(0, YHighSpeed);
 
         // Move to the start position
-        this->motorX->moveTo(this->XStart, highSpeed);
-        this->motorY->moveTo(this->YStart, highSpeed);
+        this->motorX->moveTo(this->XStart, XHighSpeed);
+        this->motorY->moveTo(this->YStart, YHighSpeed);
 
         // Move to the ignitor position
-        this->motorY->moveTo(this->YEnd, lowSpeed);
+        this->motorY->moveTo(this->YEnd, YLowSpeed);
 
         this->startTime = millis();
 
@@ -101,10 +103,10 @@ public:
 
     void interrupt() {
         started = false;
-
-        this->motorY->moveTo(this->YStart, highSpeed);
-
         this->ignitor->stop();
+
+        this->motorY->moveTo(this->YStart, YHighSpeed);
+
     }
 
     std::vector<double> loop() {
@@ -123,7 +125,27 @@ public:
         std::vector<double> sensor_data = readSensors();
 
         return sensor_data;
-        
+    }
+
+    bool SetVariable(String varname, float value) {
+        if (varname == "YStart") {
+            YStart = value;
+        } else if (varname == "XStart") {
+            XStart = value;
+        } else if (varname == "YEnd") {
+            YEnd = value;
+        } else if (varname == "XHighSpeed") {
+            XHighSpeed = value;
+        } else if (varname == "XLowSpeed") {
+            XLowSpeed = value;
+        } else if (varname == "YHighSpeed") {
+            YHighSpeed = value;
+        } else if (varname == "YLowSpeed") {
+            YLowSpeed = value;
+        } else {
+            return false;
+        }  
+        return true;
     }
 };
 

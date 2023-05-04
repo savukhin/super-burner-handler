@@ -141,4 +141,38 @@ export class SerialClient {
         return await this.WaitForAnswer(id)
     }
 
+    async SendSetFloatHandler (ievent: Electron.IpcMainInvokeEvent, varname: "YStart" | "XStart" | "YEnd" | "XHighSpeed" | "XLowSpeed" | "YHighSpeed" | "YLowSpeed", value: number) {
+        if (this.serial == undefined)
+            return
+
+        const id = this.generateId()
+
+        let request = `${id} setfloat ${varname} ${value}\n`
+        this.serial.write(request, function(err) {
+            if (err) {
+                return console.log('Error on write: ', err.message)
+            }
+            console.log('message written')
+        })
+
+        return await this.WaitForAnswer(id)
+    }
+
+    async SendStartExperimentHandler (ievent: Electron.IpcMainInvokeEvent) {
+        if (this.serial == undefined)
+            return
+
+        const id = this.generateId()
+
+        let request = `${id} start\n`
+        this.serial.write(request, function(err) {
+            if (err) {
+                return console.log('Error on write: ', err.message)
+            }
+            console.log('message written')
+        })
+
+        return await this.WaitForAnswer(id)
+    }
+
 }

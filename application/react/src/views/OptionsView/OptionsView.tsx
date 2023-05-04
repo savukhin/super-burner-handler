@@ -120,36 +120,40 @@ export function OptionsView(props: OptionsViewProps) {
 
     async function startExperiment() {
         experimentState.Start()
-        setExperimentState(Object.create(experimentState))
-
-        const MAX_Y = 190;
-        await sendMotorMove(0, "y", speedYRapid)
-        await sendMotorMove(0, "x", speedXRapid)
-
-        await sendMotorMove(experimentState.positions.x1_end, "x", speedXRapid)
-        await sendMotorMove(experimentState.positions.y_start, "y", speedYRapid)
-        await setTimeout(() => {}, 1000)
-
-        await sendMotorMove(MAX_Y, "y", speedYFeed)
-        await setTimeout(() => {}, 500)
-
-        await sendMotorMove(experimentState.positions.y_start, "y", speedYFeed)
-        await setTimeout(() => {}, 500)
-        await sendMotorMove(experimentState.positions.x2_end, "x", speedXRapid)
-
-        await setTimeout(() => {}, 500)
-        await sendMotorMove(MAX_Y, "y", speedYFeed)
-        await setTimeout(() => {}, 500)
-        await sendMotorMove(experimentState.positions.y_start, "y", speedYFeed)
-        
-        await sendMotorMove(0, "y", speedYRapid)
-        await sendMotorMove(0, "x", speedXRapid)
-
-        console.log("Ended");
-        
-
+        await props.client.StartExperiment()
         experimentState.Finish()
-        setExperimentState(Object.create(experimentState))
+
+        // experimentState.Start()
+        // setExperimentState(Object.create(experimentState))
+
+        // const MAX_Y = 190;
+        // await sendMotorMove(0, "y", speedYRapid)
+        // await sendMotorMove(0, "x", speedXRapid)
+
+        // await sendMotorMove(experimentState.positions.x1_end, "x", speedXRapid)
+        // await sendMotorMove(experimentState.positions.y_start, "y", speedYRapid)
+        // await setTimeout(() => {}, 1000)
+
+        // await sendMotorMove(MAX_Y, "y", speedYFeed)
+        // await setTimeout(() => {}, 500)
+
+        // await sendMotorMove(experimentState.positions.y_start, "y", speedYFeed)
+        // await setTimeout(() => {}, 500)
+        // await sendMotorMove(experimentState.positions.x2_end, "x", speedXRapid)
+
+        // await setTimeout(() => {}, 500)
+        // await sendMotorMove(MAX_Y, "y", speedYFeed)
+        // await setTimeout(() => {}, 500)
+        // await sendMotorMove(experimentState.positions.y_start, "y", speedYFeed)
+        
+        // await sendMotorMove(0, "y", speedYRapid)
+        // await sendMotorMove(0, "x", speedXRapid)
+
+        // console.log("Ended");
+        
+
+        // experimentState.Finish()
+        // setExperimentState(Object.create(experimentState))
     }
 
     function onChangeCOM(newValue: IOptionValue) {
@@ -236,23 +240,40 @@ export function OptionsView(props: OptionsViewProps) {
         setCurrentPosition(Object.create(currentPosition))
     }
 
-    function setExperimentPosition(point: "x1" | "x2" | "y") {
+    useEffect(() => {
+        props.client.SetVarFloat("XLowSpeed", speedXFeed)
+    }, [speedXFeed, props.client])
+    useEffect(() => {
+        props.client.SetVarFloat("XHighSpeed", speedXRapid)
+    }, [speedXRapid, props.client])
+    useEffect(() => {
+        props.client.SetVarFloat("YLowSpeed", speedYFeed)
+    }, [speedYFeed, props.client])
+    useEffect(() => {
+        props.client.SetVarFloat("YHighSpeed", speedYRapid)
+    }, [speedYRapid, props.client])
+    
+
+    function setExperimentPosition(point: "x" | "y1" | "y2") {
         switch (point) {
-            case "x1":
+            case "x":
                 experimentState.positions.x1_end = currentPosition.x
+                props.client.SetVarFloat("XStart", currentPosition.x)
                 break;
-            case "x2":
-                experimentState.positions.x2_end = currentPosition.x
-                break;
-            case "y":
+            case "y1":
                 experimentState.positions.y_start = currentPosition.y
+                props.client.SetVarFloat("YStart", currentPosition.y)
+                break;
+            case "y2":
+                experimentState.positions.y_end = currentPosition.y
+                props.client.SetVarFloat("YEnd", currentPosition.y)
                 break;
         }
 
         setExperimentState(Object.create(experimentState))
     }
 
-    function onChangeEndPosition(event: React.ChangeEvent<HTMLInputElement>, point: "x1" | "x2" | "y") {
+    function onChangeEndPosition(event: React.ChangeEvent<HTMLInputElement>, point: "x" | "y1" | "y2") {
         const value = +event.target.value
         if (isNaN(value)) {
             showErrorAlert("Value must be number!")
@@ -260,14 +281,17 @@ export function OptionsView(props: OptionsViewProps) {
         }
 
         switch (point) {
-            case "x1":
+            case "x":
                 experimentState.positions.x1_end = value
+                props.client.SetVarFloat("XStart", value)
                 break;
-            case "x2":
-                experimentState.positions.x2_end = value
-                break;
-            case "y":
+            case "y1":
                 experimentState.positions.y_start = value
+                props.client.SetVarFloat("YStart", value)
+                break;
+            case "y2":
+                experimentState.positions.y_end = value
+                props.client.SetVarFloat("YEnd", value)
                 break;
         }
 
@@ -337,24 +361,24 @@ export function OptionsView(props: OptionsViewProps) {
                         <span>mm</span>
                     </div>
 
-                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("x1") }}> Set X1 end position</button>
-                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("x2") }}> Set X2 end position</button>
-                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("y") }}> Set Y start position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("x") }}> Set X end position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("y1") }}> Set Y1 start position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("y2") }}> Set Y2 end position</button>
                 </fieldset>
                 <fieldset className="fixed-values">
                     <div className="labeled-parameter">
-                        <span>X1</span>
-                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x1_end } onChange={(event) => { onChangeEndPosition(event, "x1") }}></input>
+                        <span>X</span>
+                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x1_end } onChange={(event) => { onChangeEndPosition(event, "x") }}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
-                        <span>X2</span>
-                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x2_end } onChange={(event) => { onChangeEndPosition(event, "x2") }}></input>
+                        <span>Y1</span>
+                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x2_end } onChange={(event) => { onChangeEndPosition(event, "y1") }}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
-                        <span>Y</span>
-                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.y_start } onChange={(event) => { onChangeEndPosition(event, "y") }}></input>
+                        <span>Y2</span>
+                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.y_start } onChange={(event) => { onChangeEndPosition(event, "y2") }}></input>
                         <span>mm</span>
                     </div>
                 </fieldset>
