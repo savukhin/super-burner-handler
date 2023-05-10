@@ -11,7 +11,7 @@ struct SetFloatVarQuery : public BaseQuery {
   float value = 0;
 
   static std::shared_ptr<SetFloatVarQuery> isSetFloatVarQuery(RawQuery queries) {
-    Logging::debug("Start checking is motor move query");
+    Logging::debug("Start checking is set float var query");
     
     if (queries.size() != 4) {
       Logging::debug("Size not two: " + String(queries.size()));

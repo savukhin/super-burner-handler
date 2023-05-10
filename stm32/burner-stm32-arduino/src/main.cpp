@@ -59,7 +59,7 @@ Pyrometer pyrometer(NC);
 Resistor photoresistor(NC);
 
 // ------- OTHERS ------- //
-Ignitor ignitor(NC);
+Ignitor ignitor(IGNITOR_PIN);
 
 Experiment experiment(
   {&thermocouple, &pyrometer, &photoresistor},
@@ -107,6 +107,14 @@ void setup() {
       Logging::debug("Refreshed positions");
 
       connector.sendResponse(query.id, "ok");
+    });
+
+    connector.setIgniteCallback([](IgniteQuery query) {
+      if (query.turnOn)
+        ignitor.start();
+      else
+        ignitor.stop();
+
     });
 
     connector.setSetFloatVarCallback([](SetFloatVarQuery query) {

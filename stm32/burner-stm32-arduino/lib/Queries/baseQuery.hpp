@@ -38,8 +38,10 @@ std::shared_ptr<unsigned int> toUInt(String str) {
     return nullptr; 
   }
   Logging::debug("value = " + String(*result));
-  if (result.get() < 0)
+  if (result.get() < 0) {
+    Logging::debug("less than null");
     return nullptr; 
+  }
 
   return std::make_shared<unsigned int>(*result);
 }

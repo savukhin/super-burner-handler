@@ -13,6 +13,7 @@ class Connector {
 private:
     void(*moveMotorCallback)(MotorMoveQuery);
     void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery);
+    void(*igniteCallback)(IgniteQuery);
     void(*setFloatVarCallback)(SetFloatVarQuery);
     void(*startExperimentCallback)(StartExperimentQuery);
 
@@ -28,6 +29,13 @@ private:
       if (calibrate != nullptr) {
         Logging::debug("Calibrate query");
         this->calibrateXYMotorsCallback(*calibrate);
+        return true;
+      }
+
+      auto ignite = IgniteQuery::isIgniteQuery(query); 
+      if (ignite != nullptr) {
+        Logging::debug("ignite query");
+        this->igniteCallback(*ignite);
         return true;
       }
 
@@ -75,7 +83,9 @@ public:
     void setCalibrateXYMotorsCallback(void(*calibrateXYMotorsCallback)(CalibrateXYMotorsQuery)) {
       this->calibrateXYMotorsCallback = calibrateXYMotorsCallback;
     }
-    // void(*startExperimentCallback)(StartExperimentQuery);
+    void setIgniteCallback(void(*igniteCallback)(IgniteQuery)) {
+      this->igniteCallback = igniteCallback;
+    }
     void setSetFloatVarCallback(void(*setFloatVarCallback)(SetFloatVarQuery)) {
       this->setFloatVarCallback = setFloatVarCallback;
     }

@@ -8,7 +8,7 @@
 // 1 calibrate-xy-motors
 struct CalibrateXYMotorsQuery : public BaseQuery {
   static std::shared_ptr<CalibrateXYMotorsQuery> isCalibrateQuery(RawQuery queries) {
-    Logging::debug("Start checking is motor move query");
+    Logging::debug("Start checking is calibrate query");
     
     if (queries.size() != 2) {
       Logging::debug("Size not two: " + String(queries.size()));
