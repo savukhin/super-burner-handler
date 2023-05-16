@@ -19,6 +19,10 @@ public:
         digitalWrite(pin, HIGH);
     }
 
+    bool isStarted() {
+        return this->started;
+    }
+
     void stop() {
         Logging::debug("Stopped ignitor");
         this->started = false;

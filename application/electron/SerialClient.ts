@@ -81,7 +81,9 @@ export class SerialClient {
 
     private async WaitForAnswer(id: number) {
         while (!this.answers.has(id)) {
-            console.log(`step. answers = ${JSON.stringify(this.answers)}`);
+            const ans = JSON.stringify(this.answers)
+            if (ans.length > 2)
+                console.log(`step. answers = ${JSON.stringify(this.answers)}`);
             await new Promise( resolve => setTimeout(resolve, 100) );
         }
 

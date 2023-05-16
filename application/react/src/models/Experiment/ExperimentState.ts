@@ -4,17 +4,17 @@ export interface IPosition {
 }
 
 export interface IPositions {
-    x1_end: number
+    x1_start: number
     x2_end: number
     y_start: number
     y_end: number
 }
 
 export class ExperimentState {
-    COMPrepared: boolean = true
+    COMPrepared: boolean = false
     YAxisPrepared: boolean = false
     YAxisEndPosition: number = 0
-    positions: IPositions = { x1_end: 0, x2_end: 0, y_start: 0, y_end: 0 }
+    positions: IPositions = { x1_start: 0, x2_end: 0, y_start: 0, y_end: 0 }
     Started = false;
 
     public SetCOMPrepared(state: boolean) {

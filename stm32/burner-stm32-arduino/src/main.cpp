@@ -118,9 +118,9 @@ void setup() {
     });
 
     connector.setSetFloatVarCallback([](SetFloatVarQuery query) {
-      Logging::debug("Query setInt " + query.variable + " value = " + String(query.value));
+      Logging::debug("Query setFloat '" + query.variable + "' value = " + String(query.value));
       bool success = experiment.SetVariable(query.variable, query.value);
-      connector.sendResponse(query.id, (success ? "ok" : "varname not recognized"));
+      connector.sendResponse(query.id, (success ? "ok" : "varname '" + String(query.variable) + "' not recognized"));
     });
 
     connector.setStartExperimentCallback([](StartExperimentQuery query) {

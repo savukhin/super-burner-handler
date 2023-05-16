@@ -59,6 +59,9 @@ private:
     void serialReader() {
       String content = "";
 
+      if (Serial.available() == 0) 
+        return;
+
       while (Serial.available() == 0) {}     //wait for data available
       content = Serial.readString();
       content.trim();

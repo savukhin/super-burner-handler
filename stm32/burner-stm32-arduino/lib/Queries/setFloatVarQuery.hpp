@@ -14,7 +14,7 @@ struct SetFloatVarQuery : public BaseQuery {
     Logging::debug("Start checking is set float var query");
     
     if (queries.size() != 4) {
-      Logging::debug("Size not two: " + String(queries.size()));
+      Logging::debug("Size not four: " + String(queries.size()));
       for (int i = 0; i < queries.size(); i++) {
         Logging::debug("Queries[" + String(i) + "] = '" + queries[i] + "'");
       }
@@ -41,7 +41,7 @@ struct SetFloatVarQuery : public BaseQuery {
     SetFloatVarQuery result;
     result.valid = true;
     result.id = *id;
-    result.variable = queries[1];
+    result.variable = queries[2];
     result.value = *value;
     return std::make_shared<SetFloatVarQuery>(result);
   }

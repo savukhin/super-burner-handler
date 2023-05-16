@@ -51,10 +51,10 @@ private:
     double XStart;
     double YEnd;
 
-    double XHighSpeed;
-    double XLowSpeed;
-    double YHighSpeed;
-    double YLowSpeed;
+    double XHighSpeed = 1600;
+    double XLowSpeed = 1000;
+    double YHighSpeed = 5000;
+    double YLowSpeed = 1000;
 
     uint32_t startTime = -1;
 
@@ -83,21 +83,30 @@ public:
         }
 
         started = true;
+
+        Logging::debug("Experiment started");
         
+        Logging::debug("Moving to null position");
         // Move to the null position
         this->motorX->moveTo(0, XHighSpeed);
         this->motorY->moveTo(0, YHighSpeed);
 
+        Logging::debug("Moving to start position (" + String(this->XStart) + "," + String(this->YStart) + ")");
         // Move to the start position
         this->motorX->moveTo(this->XStart, XHighSpeed);
         this->motorY->moveTo(this->YStart, YHighSpeed);
 
+        Logging::debug("Moving to ingitor position (" + String(this->XStart) + "," + String(this->YEnd) + ")");
         // Move to the ignitor position
         this->motorY->moveTo(this->YEnd, YLowSpeed);
 
         this->startTime = millis();
+        Logging::debug("start time = " + String(this->startTime));
 
+        Logging::debug("Ignite");
         this->ignitor->start();
+        
+        Logging::debug("Started");
 
     }
 
@@ -113,18 +122,22 @@ public:
         if (!started) {
             return {};
         }
+        // Logging::debug("exp loop time = " + String(millis()));
 
-        if (millis() - this->startTime > 500) {
+        if (millis() - this->startTime > 500 && this->ignitor->isStarted()) {
+            Logging::debug("Stop ignitor");
             this->ignitor->stop();
         }
 
-        if (this->photoresistor->getValue() > 200) {
-            interrupt();
-        }
+        // if (this->photoresistor->getValue() > 200) {
+        //     interrupt();
+        // }
 
-        std::vector<double> sensor_data = readSensors();
+        // std::vector<double> sensor_data = readSensors();
 
-        return sensor_data;
+        // return sensor_data;
+
+        return {};
     }
 
     bool SetVariable(String varname, float value) {

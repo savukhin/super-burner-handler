@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Chart, type MapChart } from "../../chart/chart";
 import { BaseClient } from "../../models/client/BaseClient";
 import { SerialClient } from "../../models/client/SerialClient";
@@ -45,13 +45,16 @@ export function OptionsView(props: OptionsViewProps) {
     const [ YMoving, setYMoving ] = useState(false)
     const [ YPosition, setYPosition ] = useState(0)
     const [ XMoving, setXMoving ] = useState(false)
+    const [ freeze, setFreeze ] = useState(false)
     const [ XPosition, setXPosition ] = useState(0)
     const [ stepRange, setStepRange] = useState(0)
     const [ currentSpeed, setCurrentSpeed] = useState(0)
-    const [ speedXFeed, setSpeedXFeed] = useState(5000)
-    const [ speedYFeed, setSpeedYFeed] = useState(800)
-    const [ speedXRapid, setSpeedXRapid] = useState(10000)
-    const [ speedYRapid, setSpeedYRapid] = useState(1600)
+
+    const [ speedXRapid, setSpeedXRapid] = useState(1600)
+    const [ speedXFeed, setSpeedXFeed] = useState(1000)
+    const [ speedYRapid, setSpeedYRapid] = useState(5000)
+    const [ speedYFeed, setSpeedYFeed] = useState(1000)
+    
     const [ pyrometerDegs, setPyrometerDegs ] = useState(0)
     const [ thermoCoupleDegs, setThermoCoupleDegs ] = useState(0)
     const [ photoResistorDegs, setPhotoResistorDegs ] = useState(0)
@@ -119,9 +122,11 @@ export function OptionsView(props: OptionsViewProps) {
     }
 
     async function startExperiment() {
+        setFreeze(true)
         experimentState.Start()
         await props.client.StartExperiment()
         experimentState.Finish()
+        setFreeze(false)
 
         // experimentState.Start()
         // setExperimentState(Object.create(experimentState))
@@ -212,65 +217,82 @@ export function OptionsView(props: OptionsViewProps) {
     async function moveArrowClick(direction: "up" | "left" | "down" | "right") {
         const step = stepRange
         let position = 0
+
+        setFreeze(true)
         
         switch (direction) {
             case "up":
-                position = await sendMotorMove(currentPosition.y + step, "y", speedYFeed)
+                position = await sendMotorMove(currentPosition.y + step, "y", speedYRapid)
                 // currentPosition.y += step
                 currentPosition.y = position
                 break;
             case "down":
-                position = await sendMotorMove(currentPosition.y - step, "y", speedYFeed)
+                position = await sendMotorMove(currentPosition.y - step, "y", speedYRapid)
                 // currentPosition.y -= step
                 currentPosition.y = position
                 break;
 
             case "right":
-                position = await sendMotorMove(currentPosition.x - step, "x", speedXFeed)
+                position = await sendMotorMove(currentPosition.x + step, "x", speedXRapid)
                 // currentPosition.x += step
                 currentPosition.x = position
                 break;
             case "left":
-                position = await sendMotorMove(currentPosition.x + step, "x", speedXFeed)
+                position = await sendMotorMove(currentPosition.x - step, "x", speedXRapid)
                 // currentPosition.x -= step
                 currentPosition.x = position
                 break;
         }
 
         setCurrentPosition(Object.create(currentPosition))
+        setFreeze(false)
     }
 
+    const setVarFloat = useCallback(async (varname : "XLowSpeed" | "XHighSpeed" | "YLowSpeed" | "YHighSpeed", value: number) => {
+        // props.client.SetVarFloat(varname, value)
+        setFreeze(true)
+        var response = await props.client.SetVarFloat(varname, value)
+        // await response
+        setFreeze(false)
+
+    }, [props.client])
+
     useEffect(() => {
-        props.client.SetVarFloat("XLowSpeed", speedXFeed)
+        setVarFloat("XLowSpeed", speedXFeed)
     }, [speedXFeed, props.client])
     useEffect(() => {
-        props.client.SetVarFloat("XHighSpeed", speedXRapid)
+        setVarFloat("XHighSpeed", speedXRapid)
+        // props.client.SetVarFloat("XHighSpeed", speedXRapid)
     }, [speedXRapid, props.client])
     useEffect(() => {
-        props.client.SetVarFloat("YLowSpeed", speedYFeed)
+        setVarFloat("YLowSpeed", speedYFeed)
+        // props.client.SetVarFloat("YLowSpeed", YLowSpeed)
     }, [speedYFeed, props.client])
     useEffect(() => {
-        props.client.SetVarFloat("YHighSpeed", speedYRapid)
+        setVarFloat("YHighSpeed", speedYRapid)
+        // props.client.SetVarFloat("YHighSpeed", speedYRapid)
     }, [speedYRapid, props.client])
     
 
-    function setExperimentPosition(point: "x" | "y1" | "y2") {
+    async function setExperimentPosition(point: "x" | "y1" | "y2") {
+        setFreeze(true)
         switch (point) {
             case "x":
-                experimentState.positions.x1_end = currentPosition.x
-                props.client.SetVarFloat("XStart", currentPosition.x)
+                await props.client.SetVarFloat("XStart", currentPosition.x)
+                experimentState.positions.x1_start = currentPosition.x
                 break;
             case "y1":
+                await  props.client.SetVarFloat("YStart", currentPosition.y)
                 experimentState.positions.y_start = currentPosition.y
-                props.client.SetVarFloat("YStart", currentPosition.y)
                 break;
             case "y2":
+                await props.client.SetVarFloat("YEnd", currentPosition.y)
                 experimentState.positions.y_end = currentPosition.y
-                props.client.SetVarFloat("YEnd", currentPosition.y)
                 break;
         }
 
         setExperimentState(Object.create(experimentState))
+        setFreeze(false)
     }
 
     function onChangeEndPosition(event: React.ChangeEvent<HTMLInputElement>, point: "x" | "y1" | "y2") {
@@ -282,7 +304,7 @@ export function OptionsView(props: OptionsViewProps) {
 
         switch (point) {
             case "x":
-                experimentState.positions.x1_end = value
+                experimentState.positions.x1_start = value
                 props.client.SetVarFloat("XStart", value)
                 break;
             case "y1":
@@ -335,6 +357,9 @@ export function OptionsView(props: OptionsViewProps) {
     function generateControls() {
         return (
             <div className="controls-wrapper">
+                {
+                    freeze ? "Disabled" : "enabled"
+                }
                 {/* <Slider text="X-Axis" enabled={ !XMoving } onChange={ (event) => { sendMotorMoveBtn(event, "x") } }></Slider> */}
                 <fieldset className="position-options-wrapper">
                     <div className="labeled-parameter">
@@ -343,10 +368,10 @@ export function OptionsView(props: OptionsViewProps) {
                         <span>mm</span>
                     </div>
                     <div className="direction-arrows-wrapper">
-                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-top" onClick={() => { moveArrowClick("up") }}>↑</button>
-                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-left" onClick={() => { moveArrowClick("left") }}>←</button>
-                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-bottom" onClick={() => { moveArrowClick("down") }}>↓</button>
-                        <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { moveArrowClick("right") }}>→</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started || freeze } className="btn arrow-top" onClick={() => { moveArrowClick("up") }}>↑</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started || freeze  } className="btn arrow-left" onClick={() => { moveArrowClick("left") }}>←</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started || freeze  } className="btn arrow-bottom" onClick={() => { moveArrowClick("down") }}>↓</button>
+                        <button disabled={ XMoving || YMoving || experimentState.Started || freeze  } className="btn arrow-right" onClick={() => { moveArrowClick("right") }}>→</button>
                     </div>
 
                     <h3>Current position</h3>
@@ -361,49 +386,49 @@ export function OptionsView(props: OptionsViewProps) {
                         <span>mm</span>
                     </div>
 
-                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("x") }}> Set X end position</button>
-                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("y1") }}> Set Y1 start position</button>
-                    <button disabled={ XMoving || YMoving || experimentState.Started } className="btn arrow-right" onClick={() => { setExperimentPosition("y2") }}> Set Y2 end position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started || freeze  } className="btn arrow-right" onClick={() => { setExperimentPosition("x") }}> Set X end position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started || freeze  } className="btn arrow-right" onClick={() => { setExperimentPosition("y1") }}> Set Y1 start position</button>
+                    <button disabled={ XMoving || YMoving || experimentState.Started || freeze  } className="btn arrow-right" onClick={() => { setExperimentPosition("y2") }}> Set Y2 end position</button>
                 </fieldset>
                 <fieldset className="fixed-values">
                     <div className="labeled-parameter">
                         <span>X</span>
-                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x1_end } onChange={(event) => { onChangeEndPosition(event, "x") }}></input>
+                        <input type="text" disabled={ experimentState.Started || freeze  } value={ experimentState.positions.x1_start } onChange={(event) => { onChangeEndPosition(event, "x") }}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
                         <span>Y1</span>
-                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.x2_end } onChange={(event) => { onChangeEndPosition(event, "y1") }}></input>
+                        <input type="text" disabled={ experimentState.Started || freeze  } value={ experimentState.positions.y_start } onChange={(event) => { onChangeEndPosition(event, "y1") }}></input>
                         <span>mm</span>
                     </div>
                     <div className="labeled-parameter">
                         <span>Y2</span>
-                        <input type="text" disabled={ experimentState.Started } value={ experimentState.positions.y_start } onChange={(event) => { onChangeEndPosition(event, "y2") }}></input>
+                        <input type="text" disabled={ experimentState.Started || freeze  } value={ experimentState.positions.y_end } onChange={(event) => { onChangeEndPosition(event, "y2") }}></input>
                         <span>mm</span>
                     </div>
                 </fieldset>
                 <fieldset className="run-fieldset">
                     <div className="labeled-parameter">
                         <span>Speed X Feed</span>
-                        <input type="text" disabled={ experimentState.Started } placeholder="Feed Speed X" value={ speedXFeed } onChange={ (event) => { onChangeNumericInput(event, setSpeedXFeed) } }></input>
+                        <input type="text" disabled={ experimentState.Started || freeze  } placeholder="Feed Speed X" value={ speedXFeed } onChange={ (event) => { onChangeNumericInput(event, setSpeedXFeed) } }></input>
                         <div className="fraction"><span>mm</span><span>min</span></div>
                     </div>
                     <div className="labeled-parameter">
                         <span>Speed Y Feed</span>
-                        <input type="text" disabled={ experimentState.Started } placeholder="Feed Speed Y" value={ speedYFeed } onChange={ (event) => { onChangeNumericInput(event, setSpeedYFeed) } }></input>
+                        <input type="text" disabled={ experimentState.Started || freeze  } placeholder="Feed Speed Y" value={ speedYFeed } onChange={ (event) => { onChangeNumericInput(event, setSpeedYFeed) } }></input>
                         <div className="fraction"><span>mm</span><span>min</span></div>
                     </div>
                     <div className="labeled-parameter">
                         <span>Speed X Rapid</span>
-                        <input type="text" disabled={ experimentState.Started } placeholder="Rapid Speed X" value={ speedXRapid } onChange={ (event) => { onChangeNumericInput(event, setSpeedXRapid) } }></input>
+                        <input type="text" disabled={ experimentState.Started || freeze  } placeholder="Rapid Speed X" value={ speedXRapid } onChange={ (event) => { onChangeNumericInput(event, setSpeedXRapid) } }></input>
                         <div className="fraction"><span>mm</span><span>min</span></div>
                     </div>
                     <div className="labeled-parameter">
                         <span>Speed Y Rapid</span>
-                        <input type="text" disabled={ experimentState.Started } placeholder="Rapid Speed Y" value={ speedYRapid } onChange={ (event) => { onChangeNumericInput(event, setSpeedYRapid) } }></input>
+                        <input type="text" disabled={ experimentState.Started || freeze  } placeholder="Rapid Speed Y" value={ speedYRapid } onChange={ (event) => { onChangeNumericInput(event, setSpeedYRapid) } }></input>
                         <div className="fraction"><span>mm</span><span>min</span></div>
                     </div>
-                    <button disabled={ !experimentState.IsReadyToStart() } className="btn" onClick={ startExperiment }>Start experiment</button>
+                    <button disabled={ !experimentState.IsReadyToStart() || freeze } className="btn" onClick={ startExperiment }>Start experiment</button>
                     {/* <button disabled={ !experimentState.Started } className="btn btn-warning" onClick={ forceStopExperiment }>Stop</button> */}
                 </fieldset>
                 <fieldset className="sensors-fieldset">
