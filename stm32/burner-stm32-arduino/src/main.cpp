@@ -42,7 +42,7 @@ const float MAX_Y_MM = 200;
 Connector connector;
 
 // ------- MOTORS ------- //
-Motor motorX(200, 0.3184, true, 0.4);
+Motor motorX(200, 0.3184, false, 0.4);
 // Motor motorX(200, 0.41, false, 0.4);
 Motor motorY(200, 9.77, true, 1);
 // Motor motorY(200, 0.525, true, 0.05);

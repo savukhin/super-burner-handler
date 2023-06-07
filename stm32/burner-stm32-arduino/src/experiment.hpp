@@ -96,6 +96,8 @@ public:
         this->motorX->moveTo(this->XStart, XHighSpeed);
         this->motorY->moveTo(this->YStart, YHighSpeed);
 
+        this->ignitor->start();
+        
         Logging::debug("Moving to ingitor position (" + String(this->XStart) + "," + String(this->YEnd) + ")");
         // Move to the ignitor position
         this->motorY->moveTo(this->YEnd, YLowSpeed);
@@ -104,7 +106,6 @@ public:
         Logging::debug("start time = " + String(this->startTime));
 
         Logging::debug("Ignite");
-        this->ignitor->start();
         
         Logging::debug("Started");
 
